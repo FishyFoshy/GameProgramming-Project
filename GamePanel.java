@@ -56,9 +56,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		backgroundImage = null;
 		ship = null;
 
-		image = new BufferedImage (608, 608, BufferedImage.TYPE_INT_RGB);
+		image = new BufferedImage (600, 800, BufferedImage.TYPE_INT_RGB);
 
-		startScreen = new StartScreen(608, 608);
+		startScreen = new StartScreen(600, 800);
 		showStartScreen = true;
 
 		setFocusable(true);
@@ -176,7 +176,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		}
 
 		Graphics2D g2 = (Graphics2D) getGraphics();
-		g2.drawImage(image, 0, 0, 608, 608, null);
+		g2.drawImage(image, 0, 0, 600, 800, null);
 
 		imageContext.dispose();
 		g2.dispose();
@@ -218,7 +218,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public void gameOver(){
 		image = grayFx.apply(image);
 		Graphics2D g2 = (Graphics2D) getGraphics();
-		g2.drawImage(image, 0, 0, 608, 608, null);
+		g2.drawImage(image, 0, 0, 600, 800, null);
 		g2.setColor(Color.white);
 		g2.setFont(new Font("Arial", Font.BOLD, 40));
 		g2.drawString("GAME OVER", 184, 304);
@@ -272,8 +272,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public void mouseClicked(MouseEvent e) {
 		if (showStartScreen) {
-			int mx = e.getX() * 608 / getWidth();
-			int my = e.getY() * 608 / getHeight();
+			int mx = e.getX() * 600 / getWidth();
+			int my = e.getY() * 800 / getHeight();
 			String clicked = startScreen.getButtonClicked(mx, my);
 			if (clicked != null) {
 				if (clicked.equals("start")) {
