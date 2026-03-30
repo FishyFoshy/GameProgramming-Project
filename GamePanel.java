@@ -40,6 +40,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private StartScreen startScreen;
 	private boolean showStartScreen;
 
+	private PauseScreen pauseScreen;
+	public static int score = 0;
+
 
 	public GamePanel (GameWindow gW) {
 		gameWindow = gW;
@@ -60,6 +63,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 		startScreen = new StartScreen(600, 800);
 		showStartScreen = true;
+
+		pauseScreen = new PauseScreen(600, 800);
 
 		setFocusable(true);
 		addKeyListener(this);
@@ -175,6 +180,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			}
 		}
 
+		// draw pause button and score on the image
+		pauseScreen.drawPauseButton(imageContext);
+		pauseScreen.drawScore(imageContext, score);
+
+		// if paused, draw the dim overlay and menu
+		if (isPaused) {
+			pauseScreen.drawPauseMenu(imageContext);
+		}
+
 		Graphics2D g2 = (Graphics2D) getGraphics();
 		g2.drawImage(image, 0, 0, 600, 800, null);
 
@@ -201,10 +215,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public void pauseGame() {
 		if (isRunning) {
-			if (isPaused)
+			if (isPaused) {
 				isPaused = false;
-			else
+				soundManager.resumeClip("bgm");
+			} else {
 				isPaused = true;
+				soundManager.pauseClip("bgm");
+				// stop ship movement so it doesn't keep going after unpause
+				if (ship != null) {
+					ship.setMoveDirection(-1);
+					ship.setMoveDirection(-2);
+					ship.setMoveDirection(-3);
+					ship.setMoveDirection(-4);
+				}
+			}
 		}
 	}
 
@@ -244,33 +268,32 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 
-		if (keyCode == KeyEvent.VK_LEFT)
+		if (keyCode == KeyEvent.VK_ESCAPE && isRunning && !gameOver)
+			pauseGame();
+		if (keyCode == KeyEvent.VK_A)
 			updateShip(1);
-		if (keyCode == KeyEvent.VK_RIGHT)
+		if (keyCode == KeyEvent.VK_D)
 			updateShip(2);
-		if (keyCode == KeyEvent.VK_UP)
+		if (keyCode == KeyEvent.VK_W)
 			updateShip(3);
-		if (keyCode == KeyEvent.VK_DOWN)
-			updateShip(4);
 	}
 
 	public void keyReleased(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 
-		if (keyCode == KeyEvent.VK_LEFT)
+		if (keyCode == KeyEvent.VK_A)
 			updateShip(-1);
-		if (keyCode == KeyEvent.VK_RIGHT)
+		if (keyCode == KeyEvent.VK_D)
 			updateShip(-2);
-		if (keyCode == KeyEvent.VK_UP)
+		if (keyCode == KeyEvent.VK_W)
 			updateShip(-3);
-		if (keyCode == KeyEvent.VK_DOWN)
-			updateShip(-4);
 	}
 
-	public void keyTyped(KeyEvent e) {
-	}
+	public void keyTyped(KeyEvent e) {}
 
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(MouseEvent e) {}
+
+	public void mousePressed(MouseEvent e) {
 		if (showStartScreen) {
 			int mx = e.getX() * 600 / getWidth();
 			int my = e.getY() * 800 / getHeight();
@@ -286,18 +309,25 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					System.exit(0);
 				}
 			}
+		} else if (isRunning && !gameOver) {
+			int mx = e.getX() * 600 / getWidth();
+			int my = e.getY() * 800 / getHeight();
+			String clicked = pauseScreen.getButtonClicked(mx, my, isPaused);
+			if (clicked != null) {
+				if (clicked.equals("pause")) {
+					pauseGame();
+				} else if (clicked.equals("resume")) {
+					pauseGame();
+				} else if (clicked.equals("exit")) {
+					System.exit(0);
+				}
+			}
 		}
 	}
 
-	public void mousePressed(MouseEvent e) {
-	}
+	public void mouseReleased(MouseEvent e) {}
 
-	public void mouseReleased(MouseEvent e) {
-	}
+	public void mouseEntered(MouseEvent e) {}
 
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-	}
+	public void mouseExited(MouseEvent e) {}
 }

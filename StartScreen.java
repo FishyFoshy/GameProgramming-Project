@@ -22,8 +22,8 @@ public class StartScreen {
                 Watch each Alien's color to predict their attack pattern.
                 
                 Controls:
-                Player 1: Left/Right arrows = move, Up arrow = fire
-                Player 2: A = left, D = right, W = fire
+                Player 1: A = left, D = right, W = fire
+                Player 2: Left/Right arrows = move, Up arrow = fire
                 
                 Survive Level 1, fight for your life in Level 2,
                 and rack up the highest score!
