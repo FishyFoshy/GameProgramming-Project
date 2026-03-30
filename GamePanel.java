@@ -90,6 +90,7 @@ public class GamePanel extends JPanel implements Runnable {
 	public void gameUpdate() {
 		int i = 0;
 		ship.update();
+		ship.move();
 		for(Alien alien : aliens){
 			alien.update();
 
@@ -110,7 +111,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 	public void updateShip (int direction) {
 		if (backgroundImage != null && !isPaused) {
-			ship.move(direction);
+			ship.setMoveDirection(direction);
 		}
 	}
 
