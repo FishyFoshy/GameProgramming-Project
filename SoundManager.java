@@ -73,4 +73,18 @@ public class SoundManager {
 			clip.stop();
 		}
 	}
+
+	public void pauseClip(String title) {
+		Clip clip = getClip(title);
+		if (clip != null) {
+			clip.stop();
+		}
+	}
+
+	public void resumeClip(String title) {
+		Clip clip = getClip(title);
+		if (clip != null) {
+			clip.loop(Clip.LOOP_CONTINUOUSLY);
+		}
+	}
 }
