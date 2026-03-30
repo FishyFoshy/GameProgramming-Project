@@ -41,8 +41,12 @@ public class Ship {
 
       centreX = dimension.width/2 - width/2;
       centreY = dimension.height/2 - height/2;
-      worldX = x = 0;
-      worldY = y = 0;
+
+      x = dimension.width/2 - width/2;
+      y = dimension.height - height - 20;
+
+      worldX = 0;
+      worldY = 0;
 
       left = right = down = up = false;
 
