@@ -36,7 +36,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
 	public GameWindow() {
  
 		setTitle ("Alien Collector");
-		setSize (700, 800);
+		setSize (600, 800);
 		setLocationRelativeTo(null);
 
 		// create user interface objects
@@ -90,7 +90,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
 		// create the gamePanel for game entities
 
 		gamePanel = new GamePanel(this);
-		gamePanel.setPreferredSize(new Dimension(608, 608));
+		gamePanel.setPreferredSize(new Dimension(600, 800));
 
 		// create infoPanel
 
@@ -128,10 +128,10 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
 
 		// add sub-panels with GUI objects to mainPanel and set its colour
 
-		mainPanel.add(infoPanel);
+		//mainPanel.add(infoPanel);
 		mainPanel.add(gamePanel);
-		mainPanel.add(buttonPanel);
-		mainPanel.setBackground(Color.MAGENTA);
+		//mainPanel.add(buttonPanel);
+		mainPanel.setBackground(Color.BLACK);
 
 		// set up mainPanel to respond to keyboard and mouse
 
@@ -145,6 +145,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
 
 		// set properties of window
 
+		pack();
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
