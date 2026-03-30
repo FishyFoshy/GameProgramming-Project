@@ -180,25 +180,42 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 
-		if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) {
+		if (keyCode == KeyEvent.VK_LEFT) {
 			gamePanel.updateShip(1);
 		}
 
-		if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) {
-			gamePanel.updateShip (2);
+		if (keyCode == KeyEvent.VK_RIGHT) {
+			gamePanel.updateShip(2);
 		}
 
-		if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) {
-			gamePanel.updateShip (3);
+		if (keyCode == KeyEvent.VK_UP) {
+			gamePanel.updateShip(3);
 		}
 
-		if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) {
-			gamePanel.updateShip (4);
+		if (keyCode == KeyEvent.VK_DOWN) {
+			gamePanel.updateShip(4);
 		}
 	}
 
 	public void keyReleased(KeyEvent e) {
-	}
+        int keyCode = e.getKeyCode();
+
+        if(keyCode == KeyEvent.VK_LEFT){
+            gamePanel.updateShip(-1);
+        }
+
+        if (keyCode == KeyEvent.VK_RIGHT) {
+			gamePanel.updateShip(-2);
+		}
+
+        if (keyCode == KeyEvent.VK_UP) {
+			gamePanel.updateShip(-3);
+		}
+
+        if (keyCode == KeyEvent.VK_DOWN) {
+			gamePanel.updateShip(-4);
+		}
+    }
 
 	public void keyTyped(KeyEvent e) {
 	}

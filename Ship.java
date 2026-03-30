@@ -67,145 +67,33 @@ public class Ship {
       } 
    }
 
-   public void move (int direction) {
-      int bgx = background.getX();
-      int bgy = background.getY();
+   public void setMoveDirection(int direction){
+      if(direction == 1) left = true;
+      if(direction == 2) right = true;
+      if(direction == 3) up = true;
+      if(direction == 4) down = true;
 
+      if(direction == -1) left = false;
+      if(direction == -2) right = false;
+      if(direction == -3) up = false;
+      if(direction == -4) down = false;
+    }
+
+   public void move () {
       if (!panel.isVisible ()) return;
       
-      if (direction == 1) {	// move left
-         left = true;
-         right = down = up = false;
-         
-         worldX = worldX - dx;
-         if (worldX < 0)
-            worldX = 0;
-         if(x < centreX || x > centreX){
-            x -= dx;
-         } else if (x == centreX){
-            bgx += dx;
-            if(bgx > 0){
-               x -= dx;
-               bgx = 0;
-            }
-            
-         }
-         if(x < 0)
+      dimension = panel.getSize();
+
+      if (left) {	// move left
+         x = x - dx;
+         if (x < 0)
             x = 0;
-         
-         SolidObject solid = collidesWithSolid();
-         if(solid != null){
-            worldX = solid.getWorldX() + solid.getWidth();
-            if(x > solid.getX() && x < solid.getX() + solid.getWidth())
-               x = solid.getX() + solid.getWidth();
-            if(x == centreX)
-               bgx -= dx;
-            x = solid.getX() + solid.getWidth();
-         }
-         
-         background.setX(bgx);
       }
-      
-      if (direction == 2) {  	// move right
-         right = true;
-         left = down = up = false;
-         
-         
-         worldX = worldX + dx;
-         if (worldX > background.getWidth() - width)
-            worldX = background.getWidth() - width;
-         if(x > centreX || x < centreX){
-            x += dx;
-         } else if(x == centreX){
-            bgx -= dx;
-            if(bgx + background.getWidth() < dimension.width){
-               x += dx;
-               bgx = dimension.width - background.getWidth();
-            }
-         }
-         
-         if(x > dimension.width - width)
+
+      if (right) {  	// move right
+         x = x + dx;
+         if (x + width > dimension.width)
             x = dimension.width - width;
-         
-         SolidObject solid = collidesWithSolid();
-         if(solid != null){
-            worldX = solid.getWorldX() - width;
-            if(x > solid.getX() && x < solid.getX() + solid.getWidth())
-               x = solid.getX() - width;
-            if(x == centreX)
-               bgx += dx;
-            x = solid.getX() - width;
-         }
-
-         background.setX(bgx);
-      }
-      
-      if (direction == 3) {	// move up
-         up = true;
-         right = down = left = false;
-         
-         worldY = worldY - dy;
-         if (worldY < 0)
-            worldY = 0;
-
-         if(y < centreY || y > centreY){
-            y -= dy;
-         } else if(y == centreY){
-            bgy += dy;
-            if(bgy > 0){
-               y -= dy;
-               bgy = 0;
-            }
-         }
-         
-         if(y < 0)
-            y = 0;
-
-         SolidObject solid = collidesWithSolid();
-         if(solid != null){
-            worldY = solid.getWorldY() + solid.getHeight();
-            if(y > solid.getY() && y < solid.getY() + solid.getHeight())
-               y = solid.getY() + solid.getHeight();
-            if(y == centreY)
-               bgy -= dy;
-            y = solid.getY() + solid.getHeight();
-         }
-
-         background.setY(bgy);
-      }
-      
-      if (direction == 4) {  	// move down
-         down = true;
-         right = left = up = false;
-         
-         worldY = worldY + dy;
-         if (worldY > background.getHeight() - height)
-            worldY = background.getHeight() - height;
-
-         if(y < centreY || y > centreY){
-            y += dy;
-         } else if(y == centreY){
-            bgy -= dy;
-            if(bgy + background.getHeight() < dimension.height){
-               y += dy;
-               bgy = dimension.height - background.getHeight();
-            }
-         }
-         
-         if(y > dimension.height - height)
-            y = dimension.height - height;
-
-         SolidObject solid = collidesWithSolid();
-         if(solid != null){
-            worldY = solid.getWorldY() - height;
-            if(y > solid.getY() && y < solid.getY() + solid.getHeight())
-               y = solid.getY() - height;
-            if(y == centreY)
-               bgy += dy;
-            y = solid.getY() - height;
-         }
-
-         background.setY(bgy);
       }
       collidesWithAlien();
    }
