@@ -1,13 +1,17 @@
-import javax.swing.JPanel;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
+import javax.swing.JPanel;
 
-public class GamePanel extends JPanel implements Runnable {
+public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener {
    
 	private SoundManager soundManager;
 
@@ -33,6 +37,9 @@ public class GamePanel extends JPanel implements Runnable {
 	private long lastFrameTime;
 	private GameWindow gameWindow;
 
+	private StartScreen startScreen;
+	private boolean showStartScreen;
+
 
 	public GamePanel (GameWindow gW) {
 		gameWindow = gW;
@@ -50,6 +57,19 @@ public class GamePanel extends JPanel implements Runnable {
 		ship = null;
 
 		image = new BufferedImage (608, 608, BufferedImage.TYPE_INT_RGB);
+
+		startScreen = new StartScreen(608, 608);
+		showStartScreen = true;
+
+		setFocusable(true);
+		addKeyListener(this);
+		addMouseListener(this);
+
+	}
+
+	public void startThread() {
+		gameThread = new Thread(this);
+		gameThread.start();
 	}
 
 	public void createGameEntities() {
@@ -76,6 +96,27 @@ public class GamePanel extends JPanel implements Runnable {
 	public void run () {
 		try {
 			isRunning = true;
+
+			// start screen loop
+			while (isRunning && showStartScreen) {
+				Graphics2D imageContext = (Graphics2D) image.getGraphics();
+				startScreen.draw(imageContext);
+				imageContext.dispose();
+
+				Graphics2D g2 = (Graphics2D) getGraphics();
+				if (g2 != null) {
+					g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+					g2.dispose();
+				}
+				Thread.sleep(50);
+			}
+
+			// initialize game after start screen
+			isPaused = gameOver = false;
+			soundManager.playClip("bgm", true);
+			createGameEntities();
+
+			// game loop
 			while (isRunning) {
 				if (!isPaused)
 					gameUpdate();
@@ -102,11 +143,6 @@ public class GamePanel extends JPanel implements Runnable {
 					gameOver = true;
 			}
 		}
-
-		gameWindow.setFPS("" + fps);
-		gameWindow.setCoords("X: " + ship.getWorldX() + ", Y: " + ship.getWorldY());
-		gameWindow.setEffects(getEffectsString());
-		gameWindow.setAliens(collected + "/" + 5 + " Aliens");
 	}
 
 	public void updateShip (int direction) {
@@ -159,15 +195,8 @@ public class GamePanel extends JPanel implements Runnable {
 
 	public void startGame() {
 
-		if (isRunning)
-			return;
-
-		isPaused = gameOver = false;
-
-		soundManager.playClip("bgm", true);
-		createGameEntities();
-		gameThread = new Thread (this);			
-		gameThread.start();
+		showStartScreen = false;
+		requestFocus();
 	}
 
 	public void pauseGame() {
@@ -210,5 +239,65 @@ public class GamePanel extends JPanel implements Runnable {
 		s = String.join(", ", set);
 
 		return s;
+	}
+
+	public void keyPressed(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+
+		if (keyCode == KeyEvent.VK_LEFT)
+			updateShip(1);
+		if (keyCode == KeyEvent.VK_RIGHT)
+			updateShip(2);
+		if (keyCode == KeyEvent.VK_UP)
+			updateShip(3);
+		if (keyCode == KeyEvent.VK_DOWN)
+			updateShip(4);
+	}
+
+	public void keyReleased(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+
+		if (keyCode == KeyEvent.VK_LEFT)
+			updateShip(-1);
+		if (keyCode == KeyEvent.VK_RIGHT)
+			updateShip(-2);
+		if (keyCode == KeyEvent.VK_UP)
+			updateShip(-3);
+		if (keyCode == KeyEvent.VK_DOWN)
+			updateShip(-4);
+	}
+
+	public void keyTyped(KeyEvent e) {
+	}
+
+	public void mouseClicked(MouseEvent e) {
+		if (showStartScreen) {
+			int mx = e.getX() * 608 / getWidth();
+			int my = e.getY() * 608 / getHeight();
+			String clicked = startScreen.getButtonClicked(mx, my);
+			if (clicked != null) {
+				if (clicked.equals("start")) {
+					startGame();
+				} else if (clicked.equals("instructions")) {
+					startScreen.setShowingInstructions(true);
+				} else if (clicked.equals("closeInstructions")) {
+					startScreen.setShowingInstructions(false);
+				} else if (clicked.equals("exit")) {
+					System.exit(0);
+				}
+			}
+		}
+	}
+
+	public void mousePressed(MouseEvent e) {
+	}
+
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	public void mouseExited(MouseEvent e) {
 	}
 }
