@@ -20,7 +20,7 @@ public class Ship {
 
    private SoundManager soundManager;
    private Background background;
-   private Animation currentAnimation, upAnimation, downAnimation, rightAnimation, leftAnimation, nextAnimation;
+   private Animation movementAnimation, rightAnimation, leftAnimation, nextAnimation, idleAnimation;
 
    private ArrayList<Alien> aliens;
    private ArrayList<SolidObject> objects;
@@ -51,32 +51,30 @@ public class Ship {
 
       soundManager = SoundManager.getInstance();
 
-      upAnimation = new Animation(true, "images/shipUp.png", 1, 6, 100);
-      downAnimation = new Animation(true, "images/shipDown.png", 1, 6, 100);
-      rightAnimation = new Animation(true, "images/shipRight.png", 1, 6, 100);
-      leftAnimation = new Animation(true, "images/shipLeft.png", 1, 6, 100);
+      idleAnimation = new Animation(true, "images/shipIdleP1.png",3, 2, 100);
+      rightAnimation = new Animation(true, "images/rightP1.png", 3, 2, 100);
+      leftAnimation = new Animation(true, "images/leftP1.png", 3, 2, 100);
 
-      currentAnimation = rightAnimation;
-      currentAnimation.start();
+      movementAnimation = null;
+      idleAnimation.start();
    }
 
 
    public void draw (Graphics2D g2) {
-      if (currentAnimation != null) {
-         g2.drawImage(currentAnimation.getImage(), x, y, width, height, null);
-      } 
+      if (idleAnimation != null) {
+         g2.drawImage(idleAnimation.getImage(), x, y, width, height, null);
+      }
+      if(movementAnimation != null){
+         g2.drawImage(movementAnimation.getImage(), x, y, width, height, null);
+      }
    }
 
    public void setMoveDirection(int direction){
       if(direction == 1) left = true;
       if(direction == 2) right = true;
-      if(direction == 3) up = true;
-      if(direction == 4) down = true;
 
       if(direction == -1) left = false;
       if(direction == -2) right = false;
-      if(direction == -3) up = false;
-      if(direction == -4) down = false;
     }
 
    public void move () {
@@ -106,20 +104,18 @@ public class Ship {
       if(right){
          nextAnimation = rightAnimation;
       }
-      if(down){
-         nextAnimation = downAnimation;
+      if(!left && ! right){
+         movementAnimation = null;
       }
-      if(up){
-         nextAnimation = upAnimation;
-      }
-      if (currentAnimation != null) {
-         if(nextAnimation != currentAnimation && nextAnimation != null){
-            currentAnimation = nextAnimation;
-            currentAnimation.stop();
-            currentAnimation.start();
+      if (movementAnimation != null) {
+         if(nextAnimation != movementAnimation && nextAnimation != null){
+            movementAnimation = nextAnimation;
+            movementAnimation.stop();
+            movementAnimation.start();
          }
-         currentAnimation.update();
+         movementAnimation.update();
       }
+      idleAnimation.update();
 	}
 
    public Rectangle2D.Double getBoundingRectangle() {
