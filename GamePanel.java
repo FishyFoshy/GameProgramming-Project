@@ -26,6 +26,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private BufferedImage image;
  	private Background backgroundImage;
 	private Ship ship;
+	private Ship ship2;
+	private boolean twoPlayer;
 
 	private ImageFX fadeFx;
 	private ImageFX blueTintFx;
@@ -39,6 +41,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	private StartScreen startScreen;
 	private boolean showStartScreen;
+
+	private PlayerSelectScreen playerSelectScreen;
+	private boolean showPlayerSelect;
 
 	private PauseScreen pauseScreen;
 	public static int score = 0;
@@ -58,11 +63,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		soundManager = SoundManager.getInstance();
 		backgroundImage = null;
 		ship = null;
+		ship2 = null;
+		twoPlayer = false;
 
 		image = new BufferedImage (600, 800, BufferedImage.TYPE_INT_RGB);
 
 		startScreen = new StartScreen(600, 800);
 		showStartScreen = true;
+
+		playerSelectScreen = new PlayerSelectScreen(600, 800);
+		showPlayerSelect = false;
 
 		pauseScreen = new PauseScreen(600, 800);
 
@@ -81,31 +91,38 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		aliens = new ArrayList<>();
 		solids = new ArrayList<>();
 		backgroundImage = new Background(); 
-		aliens.add(new Alien(this, 16*76, 16*36, backgroundImage, fadeFx));
-		aliens.add(new Alien(this, 16*147, 16*83, backgroundImage, greenTintFx));
-		aliens.add(new Alien(this, 16*6, 16*76, backgroundImage, blueTintFx));
-		aliens.add(new Alien(this, 16*108, 16*46, backgroundImage, null));
-		aliens.add(new Alien(this, 16*118, 16*8, backgroundImage, redTintFx));
-		solids.add(new SolidObject(this, 240, 80, 16*3, 16*3, backgroundImage));
-		solids.add(new SolidObject(this, 576, 480, 16*9, 16*3, backgroundImage));
-		solids.add(new SolidObject(this, 400, 816, 16*1, 16*17, backgroundImage));
-		solids.add(new SolidObject(this, 1168, 368, 16*4, 16*7, backgroundImage));
-		solids.add(new SolidObject(this, 1552, 688, 16*2, 16*13, backgroundImage));
-		solids.add(new SolidObject(this, 1984, 112, 16*23, 16*6, backgroundImage));
-		solids.add(new SolidObject(this, 1904, 864, 16*9, 16*9, backgroundImage));
-		solids.add(new SolidObject(this, 2352, 1168, 16*18, 16*9, backgroundImage));
-		solids.add(new SolidObject(this, 736, 736, 16*37, 16*3, backgroundImage));
+		// First two aliens in line with P1 and P2 start positions for testing
+		aliens.add(new Alien(this, 16, 716, backgroundImage, fadeFx));
+		aliens.add(new Alien(this, 500, 716, backgroundImage, greenTintFx));
 		ship = new Ship(this, backgroundImage, solids, aliens);
+		if (twoPlayer) {
+			ship2 = new Ship(this, backgroundImage, solids, aliens, true);
+		}
 	}
 
 	public void run () {
 		try {
 			isRunning = true;
+			soundManager.playClip("mainmenu", true);
 
 			// start screen loop
 			while (isRunning && showStartScreen) {
 				Graphics2D imageContext = (Graphics2D) image.getGraphics();
 				startScreen.draw(imageContext);
+				imageContext.dispose();
+
+				Graphics2D g2 = (Graphics2D) getGraphics();
+				if (g2 != null) {
+					g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+					g2.dispose();
+				}
+				Thread.sleep(50);
+			}
+
+			// player select screen loop
+			while (isRunning && showPlayerSelect) {
+				Graphics2D imageContext = (Graphics2D) image.getGraphics();
+				playerSelectScreen.draw(imageContext);
 				imageContext.dispose();
 
 				Graphics2D g2 = (Graphics2D) getGraphics();
@@ -137,6 +154,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		int i = 0;
 		ship.update();
 		ship.move();
+		if (ship2 != null) {
+			ship2.update();
+			ship2.move();
+		}
 		for(Alien alien : aliens){
 			alien.update();
 
@@ -172,6 +193,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 		if (ship != null) {
 			ship.draw(imageContext);
+		}
+
+		if (ship2 != null) {
+			ship2.draw(imageContext);
 		}
 		
 		if(solids != null){
@@ -210,6 +235,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public void startGame() {
 
 		showStartScreen = false;
+		showPlayerSelect = true;
+		requestFocus();
+	}
+
+	public void selectPlayers(boolean two) {
+		twoPlayer = two;
+		showPlayerSelect = false;
+		soundManager.stopClip("mainmenu");
 		requestFocus();
 	}
 
@@ -227,6 +260,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					ship.setMoveDirection(-2);
 					ship.setMoveDirection(-3);
 					ship.setMoveDirection(-4);
+				}
+				if (ship2 != null) {
+					ship2.setMoveDirection(-1);
+					ship2.setMoveDirection(-2);
+					ship2.setMoveDirection(-3);
+					ship2.setMoveDirection(-4);
 				}
 			}
 		}
@@ -276,6 +315,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			updateShip(2);
 		if (keyCode == KeyEvent.VK_W)
 			updateShip(3);
+		if (ship2 != null && !isPaused) {
+			if (keyCode == KeyEvent.VK_LEFT)
+				ship2.setMoveDirection(1);
+			if (keyCode == KeyEvent.VK_RIGHT)
+				ship2.setMoveDirection(2);
+			if (keyCode == KeyEvent.VK_UP)
+				ship2.setMoveDirection(3);
+		}
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -287,6 +334,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			updateShip(-2);
 		if (keyCode == KeyEvent.VK_W)
 			updateShip(-3);
+		if (ship2 != null) {
+			if (keyCode == KeyEvent.VK_LEFT)
+				ship2.setMoveDirection(-1);
+			if (keyCode == KeyEvent.VK_RIGHT)
+				ship2.setMoveDirection(-2);
+			if (keyCode == KeyEvent.VK_UP)
+				ship2.setMoveDirection(-3);
+		}
 	}
 
 	public void keyTyped(KeyEvent e) {}
@@ -307,6 +362,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					startScreen.setShowingInstructions(false);
 				} else if (clicked.equals("exit")) {
 					System.exit(0);
+				}
+			}
+		} else if (showPlayerSelect) {
+			int mx = e.getX() * 600 / getWidth();
+			int my = e.getY() * 800 / getHeight();
+			String clicked = playerSelectScreen.getButtonClicked(mx, my);
+			if (clicked != null) {
+				if (clicked.equals("1player")) {
+					selectPlayers(false);
+				} else if (clicked.equals("2players")) {
+					selectPlayers(true);
 				}
 			}
 		} else if (isRunning && !gameOver) {
