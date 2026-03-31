@@ -33,13 +33,13 @@ public class PlayerSelectScreen {
 
 		// 1 player button
 		g.setColor(green);
-		g.fillRect(buttonX, onePlayerButtonY, buttonWidth, buttonHeight);
+		g.fillRoundRect(buttonX, onePlayerButtonY, buttonWidth, buttonHeight, 18, 18);
 		g.setColor(Color.WHITE);
 		g.drawString("1 Player", buttonX + 60, onePlayerButtonY + 33);
 
 		// 2 players button
 		g.setColor(green);
-		g.fillRect(buttonX, twoPlayerButtonY, buttonWidth, buttonHeight);
+		g.fillRoundRect(buttonX, twoPlayerButtonY, buttonWidth, buttonHeight, 18, 18);
 		g.setColor(Color.WHITE);
 		g.drawString("2 Players", buttonX + 53, twoPlayerButtonY + 33);
 	}
