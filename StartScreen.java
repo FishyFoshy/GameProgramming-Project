@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 public class StartScreen {
 
@@ -50,8 +51,8 @@ public class StartScreen {
 	}
 
 	private void drawMainMenu(Graphics2D g) {
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, panelWidth, panelHeight);
+		BufferedImage bg = ImageManager.loadBufferedImage("images/Space.png");
+		g.drawImage(bg, 0, 0, 600, 800, 0, 0, 600, 800, null);
 
 		Color green = new Color(0, 150, 0, 150);
 		g.setFont(new Font("Arial", Font.BOLD, 22));
@@ -76,8 +77,8 @@ public class StartScreen {
 	}
 
 	private void drawInstructions(Graphics2D g) {
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, panelWidth, panelHeight);
+		BufferedImage bg = ImageManager.loadBufferedImage("images/Space.png");
+		g.drawImage(bg, 0, 0, 600, 800, 0, 0, 600, 800, null);
 
 		int padding = 40;
 		Color green = new Color(0, 150, 0, 150);

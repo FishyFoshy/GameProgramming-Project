@@ -6,8 +6,8 @@ import javax.swing.JPanel;
 
 public class Ship {
    private JPanel panel;
-   private static int centreX;
-   private static int centreY;
+   private int centreX;
+   private int centreY;
    private int width;
    private int height;
    private int worldX, x;
@@ -58,6 +58,44 @@ public class Ship {
       idleAnimation = new Animation(true, "images/shipIdleP1.png",3, 2, 100);
       rightAnimation = new Animation(true, "images/rightP1.png", 3, 2, 100);
       leftAnimation = new Animation(true, "images/leftP1.png", 3, 2, 100);
+
+      movementAnimation = null;
+      idleAnimation.start();
+   }
+
+   // constructor for player 2
+   public Ship (JPanel p, Background bg, ArrayList<SolidObject> s, ArrayList<Alien> a, boolean isP2) {
+      panel = p;
+      dimension = panel.getSize();
+      background = bg;
+
+      gray = new GrayScaleFX();
+
+      width = 64;
+      height = 64;
+
+      objects = s;
+      aliens = a;
+
+      centreX = dimension.width/2 - width/2;
+      centreY = dimension.height/2 - height/2;
+
+      x = dimension.width/2 - width/2 + 80;
+      y = dimension.height - height - 20;
+
+      worldX = 0;
+      worldY = 0;
+
+      left = right = down = up = false;
+
+      dx = 16;
+      dy = 16;
+
+      soundManager = SoundManager.getInstance();
+
+      idleAnimation = new Animation(true, "images/shipIdleP2.png", 3, 2, 100);
+      rightAnimation = new Animation(true, "images/rightP2.png", 3, 2, 100);
+      leftAnimation = new Animation(true, "images/leftP2.png", 3, 2, 100);
 
       movementAnimation = null;
       idleAnimation.start();
@@ -123,7 +161,16 @@ public class Ship {
 	}
 
    public Rectangle2D.Double getBoundingRectangle() {
-      return new Rectangle2D.Double (worldX, worldY, width, height);
+      // Convert current screen position (x,y) into world coordinates
+      int bgx = 0;
+      int bgy = 0;
+      if (background != null) {
+         bgx = background.getX();
+         bgy = background.getY();
+      }
+      int wx = x - bgx;
+      int wy = y - bgy;
+      return new Rectangle2D.Double (wx, wy, width, height);
    }
 
    public SolidObject collidesWithSolid(){
@@ -146,6 +193,18 @@ public class Ship {
          }
       }
    }
-   public int getWorldX(){return worldX;}
-   public int getWorldY(){return worldY;}
+   public int getWorldX(){
+      int bgx = 0;
+      if (background != null) {
+         bgx = background.getX();
+      }
+      return x - bgx;
+   }
+   public int getWorldY(){
+      int bgy = 0;
+      if (background != null) {
+         bgy = background.getY();
+      }
+      return y - bgy;
+   }
 }
