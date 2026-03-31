@@ -12,7 +12,7 @@ public class Ship {
    private int height;
    private int worldX, x;
    private int worldY, y;
-   private boolean left, right, down, up;
+   private boolean left, right, isP2;
 
    private int dx, dy;
 
@@ -26,15 +26,17 @@ public class Ship {
    private ArrayList<SolidObject> objects;
    private ImageFX gray;
 
-   public Ship (JPanel p, Background bg, ArrayList<SolidObject> s, ArrayList<Alien> a) {
+   public Ship (JPanel p, Background bg, ArrayList<SolidObject> s, ArrayList<Alien> a, boolean isP2) {
       panel = p;
       dimension = panel.getSize();
       background = bg;
 
+      this.isP2 = isP2;
+
       gray = new GrayScaleFX();
 
-      width = 64;
-      height = 64;
+      width = 80;
+      height = 65;
 
       objects = s;
       aliens = a;
@@ -48,10 +50,10 @@ public class Ship {
       worldX = 0;
       worldY = 0;
 
-      left = right = down = up = false;
+      left = right = false;
 
-      dx = 16;
-      dy = 16;
+      dx = 10;
+      dy = 10;
 
       soundManager = SoundManager.getInstance();
 
@@ -59,43 +61,11 @@ public class Ship {
       rightAnimation = new Animation(true, "images/rightP1.png", 3, 2, 100);
       leftAnimation = new Animation(true, "images/leftP1.png", 3, 2, 100);
 
-      movementAnimation = null;
-      idleAnimation.start();
-   }
-
-   // constructor for player 2
-   public Ship (JPanel p, Background bg, ArrayList<SolidObject> s, ArrayList<Alien> a, boolean isP2) {
-      panel = p;
-      dimension = panel.getSize();
-      background = bg;
-
-      gray = new GrayScaleFX();
-
-      width = 64;
-      height = 64;
-
-      objects = s;
-      aliens = a;
-
-      centreX = dimension.width/2 - width/2;
-      centreY = dimension.height/2 - height/2;
-
-      x = dimension.width/2 - width/2 + 80;
-      y = dimension.height - height - 20;
-
-      worldX = 0;
-      worldY = 0;
-
-      left = right = down = up = false;
-
-      dx = 16;
-      dy = 16;
-
-      soundManager = SoundManager.getInstance();
-
-      idleAnimation = new Animation(true, "images/shipIdleP2.png", 3, 2, 100);
-      rightAnimation = new Animation(true, "images/rightP2.png", 3, 2, 100);
-      leftAnimation = new Animation(true, "images/leftP2.png", 3, 2, 100);
+      if(isP2){
+         idleAnimation = new Animation(true, "images/shipIdleP2.png", 3, 2, 100);
+         rightAnimation = new Animation(true, "images/rightP2.png", 3, 2, 100);
+         leftAnimation = new Animation(true, "images/leftP2.png", 3, 2, 100);
+      }
 
       movementAnimation = null;
       idleAnimation.start();
@@ -126,14 +96,14 @@ public class Ship {
 
       if (left) {	// move left
          x = x - dx;
-         if (x < 0)
-            x = 0;
+         if (x < 0-15)
+            x = 0-15;
       }
 
       if (right) {  	// move right
          x = x + dx;
-         if (x + width > dimension.width)
-            x = dimension.width - width;
+         if (x + width > dimension.width+15)
+            x = dimension.width - width+15;
       }
       collidesWithAlien();
    }
@@ -149,14 +119,15 @@ public class Ship {
       if(!left && ! right){
          movementAnimation = null;
       }
-      if (movementAnimation != null) {
-         if(nextAnimation != movementAnimation && nextAnimation != null){
-            movementAnimation = nextAnimation;
-            movementAnimation.stop();
-            movementAnimation.start();
-         }
-         movementAnimation.update();
+
+      if(nextAnimation != movementAnimation && nextAnimation != null){
+         movementAnimation = nextAnimation;
+         movementAnimation.stop();
+         movementAnimation.start();
       }
+      if(movementAnimation != null)
+         movementAnimation.update();
+
       idleAnimation.update();
 	}
 
@@ -168,9 +139,9 @@ public class Ship {
          bgx = background.getX();
          bgy = background.getY();
       }
-      int wx = x - bgx;
+      int wx = x - bgx + 15;
       int wy = y - bgy;
-      return new Rectangle2D.Double (wx, wy, width, height);
+      return new Rectangle2D.Double (wx+15, wy, width-30, height);
    }
 
    public SolidObject collidesWithSolid(){

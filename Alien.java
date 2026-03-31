@@ -21,8 +21,8 @@ public class Alien {
    public Alien (JPanel p, int xPos, int yPos, Background bg, ImageFX effect) {
       isCollected = false;
 
-      width = 48;
-      height = 48;
+      width = 50;
+      height = 50;
 
       background = bg;
       this.effect = effect;
@@ -30,7 +30,7 @@ public class Alien {
       this.worldX = xPos;
       this.worldY = yPos;
 
-      alienAnimation = new Animation(true, "images/alien.png", 1, 6, 200);
+      alienAnimation = new Animation(true, "images/alien.png", 1, 1, 200);
 
       alienAnimation.start();
    }
