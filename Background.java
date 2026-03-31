@@ -1,5 +1,4 @@
 import java.awt.Graphics2D;
-
 import java.awt.Image;
 
 public class Background {
@@ -18,7 +17,7 @@ public class Background {
       width = 2560;
       height = 1440;
 
-      backgroundImage = ImageManager.loadImage("images/background.jpg");
+      backgroundImage = ImageManager.loadImage("images/Space.png");
    }
 
 
