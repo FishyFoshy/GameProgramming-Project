@@ -11,6 +11,9 @@ public class Ship {
    private int x;
    private int y;
    private boolean left, right, isP2;
+   private boolean firing;
+   private long lastFireTime;
+   private static final long FIRE_COOLDOWN = 300;
 
    private int dx;
 
@@ -20,6 +23,7 @@ public class Ship {
    private Animation movementAnimation, rightAnimation, leftAnimation, nextAnimation, idleAnimation;
 
    private ArrayList<Alien> aliens;
+   private ArrayList<Projectile> projectiles;
    private ImageFX gray;
 
    public Ship (JPanel p, int xPos, int yPos, ArrayList<Alien> a, boolean isP2) {
@@ -34,11 +38,13 @@ public class Ship {
       height = 65;
 
       aliens = a;
+      projectiles = new ArrayList<>();
 
       x = xPos;
       y = yPos;
 
-      left = right = false;
+      left = right = firing = false;
+      lastFireTime = 0;
 
       dx = 10;
 
@@ -58,6 +64,23 @@ public class Ship {
       idleAnimation.start();
    }
 
+   public void setFiring(boolean f) {
+      firing = f;
+   }
+
+   public void fire() {
+      long now = System.currentTimeMillis();
+      if (firing && now - lastFireTime >= FIRE_COOLDOWN) {
+         int bulletX = x + width / 2 - 4;
+         int bulletY = y;
+         projectiles.add(new StraightProjectile(bulletX, bulletY, true));
+         lastFireTime = now;
+      }
+   }
+
+   public ArrayList<Projectile> getProjectiles() {
+      return projectiles;
+   }
 
    public void draw (Graphics2D g2) {
       if (idleAnimation != null) {
@@ -65,6 +88,9 @@ public class Ship {
       }
       if(movementAnimation != null){
          g2.drawImage(movementAnimation.getImage(), x, y, width, height, null);
+      }
+      for (Projectile p : projectiles) {
+         p.draw(g2);
       }
    }
 
@@ -116,6 +142,13 @@ public class Ship {
          movementAnimation.update();
 
       idleAnimation.update();
+
+      for (int i = projectiles.size() - 1; i >= 0; i--) {
+         projectiles.get(i).update();
+         if (!projectiles.get(i).isActive()) {
+            projectiles.remove(i);
+         }
+      }
 	}
 
    public Rectangle2D.Double getBoundingRectangle() {
