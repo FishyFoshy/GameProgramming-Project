@@ -157,9 +157,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		int i = 0;
 		ship.update();
 		ship.move();
+		ship.fire();
 		if (ship2 != null) {
 			ship2.update();
 			ship2.move();
+			ship2.fire();
 		}
 
 		// asteroid spawn logic: every 5 seconds, 30% chance to spawn one
@@ -179,6 +181,27 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			ast.update();
 			if (!ast.isAlive() || ast.isOffScreen(800)) {
 				asteroids.remove(a);
+			}
+		}
+
+		// check projectile-asteroid collisions
+		checkProjectileCollisions(ship.getProjectiles());
+		if (ship2 != null) {
+			checkProjectileCollisions(ship2.getProjectiles());
+		}
+	}
+
+	private void checkProjectileCollisions(ArrayList<Projectile> projectiles) {
+		for (int p = projectiles.size() - 1; p >= 0; p--) {
+			Projectile proj = projectiles.get(p);
+			for (int a = asteroids.size() - 1; a >= 0; a--) {
+				Asteroid ast = asteroids.get(a);
+				if (ast.isAlive() && ast.collidesWith(proj.getBoundingRectangle())) {
+					ast.destroy();
+					projectiles.remove(p);
+					score += 10;
+					break;
+				}
 			}
 		}
 	}
@@ -324,15 +347,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			updateShip(1);
 		if (keyCode == KeyEvent.VK_D)
 			updateShip(2);
-		if (keyCode == KeyEvent.VK_W)
-			updateShip(3);
+		if (keyCode == KeyEvent.VK_W && ship != null && !isPaused)
+			ship.setFiring(true);
 		if (ship2 != null && !isPaused) {
 			if (keyCode == KeyEvent.VK_LEFT)
 				ship2.setMoveDirection(1);
 			if (keyCode == KeyEvent.VK_RIGHT)
 				ship2.setMoveDirection(2);
 			if (keyCode == KeyEvent.VK_UP)
-				ship2.setMoveDirection(3);
+				ship2.setFiring(true);
 		}
 	}
 
@@ -343,15 +366,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			updateShip(-1);
 		if (keyCode == KeyEvent.VK_D)
 			updateShip(-2);
-		if (keyCode == KeyEvent.VK_W)
-			updateShip(-3);
+		if (keyCode == KeyEvent.VK_W && ship != null)
+			ship.setFiring(false);
 		if (ship2 != null) {
 			if (keyCode == KeyEvent.VK_LEFT)
 				ship2.setMoveDirection(-1);
 			if (keyCode == KeyEvent.VK_RIGHT)
 				ship2.setMoveDirection(-2);
 			if (keyCode == KeyEvent.VK_UP)
-				ship2.setMoveDirection(-3);
+				ship2.setFiring(false);
 		}
 	}
 
