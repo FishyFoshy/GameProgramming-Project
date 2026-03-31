@@ -1,9 +1,7 @@
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import javax.swing.JPanel;
 
 public class BackgroundManager {
     private List<ParallaxLayer> layers = new ArrayList<>();
@@ -15,9 +13,9 @@ public class BackgroundManager {
         layer2Image = ImageManager.loadBufferedImage ("images/Planets.png");
         layer3Image = ImageManager.loadBufferedImage ("images/Stars.png");
 
-	    addLayer(new ParallaxLayer(layer1Image, 0.20f));
-        addLayer(new ParallaxLayer(layer2Image, 0.50f));
-	    addLayer(new ParallaxLayer(layer3Image, 0.80f));
+	    addLayer(new ParallaxLayer(layer1Image, 0.20f, -1600));
+        addLayer(new ParallaxLayer(layer2Image, 0.50f, -4000));
+	    addLayer(new ParallaxLayer(layer3Image, 0.80f, -1600));
     }
 
     public void addLayer(ParallaxLayer layer) {
