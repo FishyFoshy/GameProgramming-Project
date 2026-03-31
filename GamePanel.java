@@ -94,7 +94,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		// First two aliens in line with P1 and P2 start positions for testing
 		aliens.add(new Alien(this, 16, 716, backgroundImage, fadeFx));
 		aliens.add(new Alien(this, 500, 716, backgroundImage, greenTintFx));
-		ship = new Ship(this, backgroundImage, solids, aliens);
+		ship = new Ship(this, backgroundImage, solids, aliens, false);
 		if (twoPlayer) {
 			ship2 = new Ship(this, backgroundImage, solids, aliens, true);
 		}
