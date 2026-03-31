@@ -10,7 +10,7 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
 	@SuppressWarnings({})
 	public GameWindow() {
  
-		setTitle ("Alien Collector");
+		setTitle ("Spacewar");
 		setSize (600, 800);
 		setLocationRelativeTo(null);
 
