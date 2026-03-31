@@ -15,8 +15,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
    
 	private SoundManager soundManager;
 
-	private ArrayList<SolidObject> solids;
-
 	private ArrayList<Alien> aliens;
 	private boolean isRunning;
 	private boolean isPaused;
@@ -57,7 +55,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		blueTintFx = new TintFX("blue");
 		redTintFx = new TintFX("red");
 		greenTintFx = new TintFX("green");
-		solids = null;
 		isRunning = false;
 		isPaused = gameOver = false;
 		soundManager = SoundManager.getInstance();
@@ -89,14 +86,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public void createGameEntities() {
 		aliens = new ArrayList<>();
-		solids = new ArrayList<>();
 		backgroundImage = new Background(); 
 		// First two aliens in line with P1 and P2 start positions for testing
-		aliens.add(new Alien(this, 16, 716, backgroundImage, fadeFx));
-		aliens.add(new Alien(this, 500, 716, backgroundImage, greenTintFx));
-		ship = new Ship(this, backgroundImage, solids, aliens, false);
+		aliens.add(new Alien(16, 716, fadeFx));
+		aliens.add(new Alien(500, 716, greenTintFx));
+		ship = new Ship(this, 210, 715, aliens, false);
 		if (twoPlayer) {
-			ship2 = new Ship(this, backgroundImage, solids, aliens, true);
+			ship2 = new Ship(this, 310, 715, aliens, true);
 		}
 	}
 
@@ -158,17 +154,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			ship2.update();
 			ship2.move();
 		}
-		for(Alien alien : aliens){
-			alien.update();
 
-			if(alien.isCollected()){
-				i++;
-				if(i > collected)
-					collected = i;
-				if(i == 5)
-					gameOver = true;
-			}
-		}
 	}
 
 	public void updateShip (int direction) {
@@ -197,12 +183,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 		if (ship2 != null) {
 			ship2.draw(imageContext);
-		}
-		
-		if(solids != null){
-			for(SolidObject solidObject : solids){
-				solidObject.draw(imageContext);
-			}
 		}
 
 		// draw pause button and score on the image
