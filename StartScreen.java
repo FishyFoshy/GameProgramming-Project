@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 
 public class StartScreen {
 
@@ -77,8 +76,8 @@ public class StartScreen {
 	}
 
 	private void drawInstructions(Graphics2D g) {
-		BufferedImage bg = ImageManager.loadBufferedImage("images/Space.png");
-		g.drawImage(bg, 0, 0, 600, 800, 0, 0, 600, 800, null);
+		BackgroundManager bg = new BackgroundManager();
+		bg.draw(g, false);
 
 		int padding = 40;
 		Color green = new Color(0, 150, 0, 150);
