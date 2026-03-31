@@ -19,6 +19,9 @@ public class SoundManager {
 		clip = loadClip("sounds/bgm.wav");
 		clips.put("bgm", clip);
 
+		clip = loadClip("sounds/mainmenu.wav");
+		clips.put("mainmenu", clip);
+
 		clip = loadClip("sounds/collect.wav");
 		clips.put("collect", clip);
 
@@ -59,6 +62,8 @@ public class SoundManager {
 	public void playClip(String title, boolean looping) {
 		Clip clip = getClip(title);
 		if (clip != null) {
+			if (clip.isRunning())
+				return;
 			clip.setFramePosition(0);
 			if (looping)
 				clip.loop(Clip.LOOP_CONTINUOUSLY);
