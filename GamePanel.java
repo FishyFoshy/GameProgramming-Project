@@ -91,8 +91,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public void createGameEntities() {
 		aliens = new ArrayList<>();
+		backgroundImage = new BackgroundManager(); 
 		asteroids = new ArrayList<>();
-		backgroundImage = new BackgroundManager();
 		lastAsteroidSpawnTime = System.currentTimeMillis(); 
 		// First two aliens in line with P1 and P2 start positions for testing
 		aliens.add(new Alien(16, 716, fadeFx));
