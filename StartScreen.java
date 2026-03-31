@@ -59,19 +59,19 @@ public class StartScreen {
 
 		// start button
 		g.setColor(green);
-		g.fillRect(buttonX, startButtonY, buttonWidth, buttonHeight);
+		g.fillRoundRect(buttonX, startButtonY, buttonWidth, buttonHeight, 20, 20);
 		g.setColor(Color.WHITE);
 		g.drawString("Start", buttonX + 70, startButtonY + 33);
 
 		// instructions button
 		g.setColor(green);
-		g.fillRect(buttonX, instructionsButtonY, buttonWidth, buttonHeight);
+		g.fillRoundRect(buttonX, instructionsButtonY, buttonWidth, buttonHeight, 20, 20);
 		g.setColor(Color.WHITE);
 		g.drawString("Instructions", buttonX + 35, instructionsButtonY + 33);
 
 		// exit button
 		g.setColor(green);
-		g.fillRect(buttonX, exitButtonY, buttonWidth, buttonHeight);
+		g.fillRoundRect(buttonX, exitButtonY, buttonWidth, buttonHeight, 20, 20);
 		g.setColor(Color.WHITE);
 		g.drawString("Exit", buttonX + 78, exitButtonY + 33);
 	}
@@ -83,7 +83,7 @@ public class StartScreen {
 		int padding = 40;
 		Color green = new Color(0, 150, 0, 150);
 		g.setColor(green);
-		g.fillRect(padding, padding, panelWidth - padding * 2, panelHeight - padding * 2);
+		g.fillRoundRect(padding, padding, panelWidth - padding * 2, panelHeight - padding * 2, 24, 24);
 
 		// title
 		g.setColor(Color.WHITE);
@@ -106,7 +106,7 @@ public class StartScreen {
 		// draw X button in top right
 		g.setColor(Color.RED);
 		g.setFont(new Font("Arial", Font.BOLD, 22));
-		g.drawRect(xButtonX, xButtonY, xButtonSize, xButtonSize);
+		g.drawRoundRect(xButtonX, xButtonY, xButtonSize, xButtonSize, 8, 8);
 		g.drawString("X", xButtonX + 7, xButtonY + 23);
 	}
 

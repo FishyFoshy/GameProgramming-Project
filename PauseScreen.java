@@ -26,7 +26,7 @@ public class PauseScreen {
 	public void drawPauseButton(Graphics2D g) {
 		Color green = new Color(0, 150, 0, 150);
 		g.setColor(green);
-		g.fillRect(pauseButtonX, pauseButtonY, pauseButtonSize, pauseButtonSize);
+		g.fillRoundRect(pauseButtonX, pauseButtonY, pauseButtonSize, pauseButtonSize, 10, 10);
 		g.setColor(Color.WHITE);
 		g.setFont(new Font("Arial", Font.BOLD, 22));
 		g.drawString("I I", pauseButtonX + 12, pauseButtonY + 28);
@@ -53,13 +53,13 @@ public class PauseScreen {
 
 		// resume button
 		g.setColor(green);
-		g.fillRect(buttonX, resumeButtonY, buttonWidth, buttonHeight);
+		g.fillRoundRect(buttonX, resumeButtonY, buttonWidth, buttonHeight, 20, 20);
 		g.setColor(Color.WHITE);
 		g.drawString("Resume", buttonX + 58, resumeButtonY + 33);
 
 		// exit button
 		g.setColor(green);
-		g.fillRect(buttonX, exitButtonY, buttonWidth, buttonHeight);
+		g.fillRoundRect(buttonX, exitButtonY, buttonWidth, buttonHeight, 20, 20);
 		g.setColor(Color.WHITE);
 		g.drawString("Exit", buttonX + 78, exitButtonY + 33);
 	}
