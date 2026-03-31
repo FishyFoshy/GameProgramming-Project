@@ -22,7 +22,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private Thread gameThread;
 
 	private BufferedImage image;
- 	private Background backgroundImage;
+ 	private BackgroundManager backgroundImage;
 	private Ship ship;
 	private Ship ship2;
 	private boolean twoPlayer;
@@ -86,7 +86,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public void createGameEntities() {
 		aliens = new ArrayList<>();
-		backgroundImage = new Background(); 
+		backgroundImage = new BackgroundManager(); 
 		// First two aliens in line with P1 and P2 start positions for testing
 		aliens.add(new Alien(16, 716, fadeFx));
 		aliens.add(new Alien(500, 716, greenTintFx));
@@ -166,9 +166,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public void gameRender() {
 		Graphics2D imageContext = (Graphics2D) image.getGraphics();
 
-
 		if (backgroundImage != null) {
-			backgroundImage.draw(imageContext);
+			backgroundImage.draw(imageContext, isPaused);
 		}
 
 		if(aliens != null){
