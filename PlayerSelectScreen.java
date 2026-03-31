@@ -20,8 +20,8 @@ public class PlayerSelectScreen {
 	}
 
 	public void draw(Graphics2D g) {
-		BufferedImage bg = ImageManager.loadBufferedImage("images/Space.png");
-		g.drawImage(bg, 0, 0, 600, 800, 0, 0, 600, 800, null);
+		BackgroundManager bg = new BackgroundManager();
+		bg.draw(g, false);
 
 		// title
 		g.setColor(Color.WHITE);

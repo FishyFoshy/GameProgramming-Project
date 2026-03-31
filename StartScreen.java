@@ -51,8 +51,8 @@ public class StartScreen {
 	}
 
 	private void drawMainMenu(Graphics2D g) {
-		BufferedImage bg = ImageManager.loadBufferedImage("images/Space.png");
-		g.drawImage(bg, 0, 0, 600, 800, 0, 0, 600, 800, null);
+		BackgroundManager bg = new BackgroundManager();
+		bg.draw(g, false);
 
 		Color green = new Color(0, 150, 0, 150);
 		g.setFont(new Font("Arial", Font.BOLD, 22));
