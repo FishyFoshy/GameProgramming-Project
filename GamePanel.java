@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.Random;
 import java.util.Set;
 import javax.swing.JPanel;
 
@@ -16,6 +17,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private SoundManager soundManager;
 
 	private ArrayList<Alien> aliens;
+	private ArrayList<Asteroid> asteroids;
 	private boolean isRunning;
 	private boolean isPaused;
 
@@ -35,6 +37,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private boolean gameOver;
 	private int collected, fps, frames;
 	private long lastFrameTime;
+	private long lastAsteroidSpawnTime;
+	private Random random;
 	private GameWindow gameWindow;
 
 	private StartScreen startScreen;
@@ -55,6 +59,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		blueTintFx = new TintFX("blue");
 		redTintFx = new TintFX("red");
 		greenTintFx = new TintFX("green");
+		random = new Random();
 		isRunning = false;
 		isPaused = gameOver = false;
 		soundManager = SoundManager.getInstance();
@@ -87,6 +92,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public void createGameEntities() {
 		aliens = new ArrayList<>();
 		backgroundImage = new BackgroundManager(); 
+		asteroids = new ArrayList<>();
+		lastAsteroidSpawnTime = System.currentTimeMillis(); 
 		// First two aliens in line with P1 and P2 start positions for testing
 		aliens.add(new Alien(16, 716, fadeFx));
 		aliens.add(new Alien(500, 716, greenTintFx));
@@ -155,6 +162,25 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			ship2.move();
 		}
 
+		// asteroid spawn logic: every 5 seconds, 30% chance to spawn one
+		long now = System.currentTimeMillis();
+		if (now - lastAsteroidSpawnTime >= 5000) {
+			int roll = random.nextInt(100);
+			if (roll < 30) {
+				int spawnX = random.nextInt(550);
+				asteroids.add(new Asteroid(spawnX, -50));
+			}
+			lastAsteroidSpawnTime = now;
+		}
+
+		// update asteroids and remove dead/offscreen ones
+		for (int a = asteroids.size() - 1; a >= 0; a--) {
+			Asteroid ast = asteroids.get(a);
+			ast.update();
+			if (!ast.isAlive() || ast.isOffScreen(800)) {
+				asteroids.remove(a);
+			}
+		}
 	}
 
 	public void updateShip (int direction) {
@@ -182,6 +208,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 		if (ship2 != null) {
 			ship2.draw(imageContext);
+		}
+
+		if (asteroids != null) {
+			for (Asteroid ast : asteroids) {
+				ast.draw(imageContext);
+			}
 		}
 
 		// draw pause button and score on the image
