@@ -6,30 +6,25 @@ import javax.swing.JPanel;
 
 public class Ship {
    private JPanel panel;
-   private int centreX;
-   private int centreY;
    private int width;
    private int height;
-   private int worldX, x;
-   private int worldY, y;
+   private int x;
+   private int y;
    private boolean left, right, isP2;
 
-   private int dx, dy;
+   private int dx;
 
    private Dimension dimension;
 
    private SoundManager soundManager;
-   private Background background;
    private Animation movementAnimation, rightAnimation, leftAnimation, nextAnimation, idleAnimation;
 
    private ArrayList<Alien> aliens;
-   private ArrayList<SolidObject> objects;
    private ImageFX gray;
 
-   public Ship (JPanel p, Background bg, ArrayList<SolidObject> s, ArrayList<Alien> a, boolean isP2) {
+   public Ship (JPanel p, int xPos, int yPos, ArrayList<Alien> a, boolean isP2) {
       panel = p;
       dimension = panel.getSize();
-      background = bg;
 
       this.isP2 = isP2;
 
@@ -38,22 +33,14 @@ public class Ship {
       width = 80;
       height = 65;
 
-      objects = s;
       aliens = a;
 
-      centreX = dimension.width/2 - width/2;
-      centreY = dimension.height/2 - height/2;
-
-      x = dimension.width/2 - width/2;
-      y = dimension.height - height - 20;
-
-      worldX = 0;
-      worldY = 0;
+      x = xPos;
+      y = yPos;
 
       left = right = false;
 
       dx = 10;
-      dy = 10;
 
       soundManager = SoundManager.getInstance();
 
@@ -132,50 +119,11 @@ public class Ship {
 	}
 
    public Rectangle2D.Double getBoundingRectangle() {
-      // Convert current screen position (x,y) into world coordinates
-      int bgx = 0;
-      int bgy = 0;
-      if (background != null) {
-         bgx = background.getX();
-         bgy = background.getY();
-      }
-      int wx = x - bgx + 15;
-      int wy = y - bgy;
-      return new Rectangle2D.Double (wx+15, wy, width-30, height);
-   }
-
-   public SolidObject collidesWithSolid(){
-      for(SolidObject solidObject : objects){
-         if(getBoundingRectangle().intersects(solidObject.getBoundingRectangle())){
-            return solidObject;
-         }
-      }
-      return null;
+      return new Rectangle2D.Double (x+15, y, width-30, height);
    }
    
    public void collidesWithAlien(){
       for(Alien alien : aliens){
-         if(!alien.isCollected()){
-            if(getBoundingRectangle().intersects(alien.getBoundingRectangle())){
-               alien.collected();
-               alien.setEffect(gray);
-               soundManager.playClip("collect", false);
-            }
-         }
       }
-   }
-   public int getWorldX(){
-      int bgx = 0;
-      if (background != null) {
-         bgx = background.getX();
-      }
-      return x - bgx;
-   }
-   public int getWorldY(){
-      int bgy = 0;
-      if (background != null) {
-         bgy = background.getY();
-      }
-      return y - bgy;
    }
 }
