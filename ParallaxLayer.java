@@ -4,19 +4,20 @@ import java.awt.image.BufferedImage;
 
 public class ParallaxLayer {
 
-   private int y;
+   private int y, startY;
    private int width;
    private int height;
 
    private BufferedImage image;	// background image
     private float factor; 
 
-   public ParallaxLayer (BufferedImage img, float factor) {
+   public ParallaxLayer (BufferedImage img, float factor, int startY) {
       width = 600;
       height = 2400;
       this.image = img;
       this.factor = factor;
-      y = -1600;
+      y = startY;
+      this.startY = startY;
    }
 
 
@@ -24,7 +25,7 @@ public class ParallaxLayer {
       y = y + Math.round(dy * factor);
 
       if(y >= 0){
-         y = -1600;
+         y = startY;
       }
 
       g2.drawImage(image, 0, y, null);
