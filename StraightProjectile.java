@@ -8,14 +8,20 @@ public class StraightProjectile implements Projectile {
     private int dy;
     private boolean active;
     private boolean isShip;
+    private int damage;
 
-    public StraightProjectile(int startX, int startY, boolean isShip) {
+    public StraightProjectile(int startX, int startY, boolean isShip, int damage) {
         this.x = startX;
         this.y = startY;
         this.size = 8;
         this.dy = 10;
         this.active = true;
         this.isShip = isShip;
+        this.damage = damage;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     public void update() {

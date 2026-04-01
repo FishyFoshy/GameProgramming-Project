@@ -14,10 +14,14 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener {
    
-	private SoundManager soundManager;
+	private final SoundManager soundManager;
 
 	private ArrayList<Alien> aliens;
 	private ArrayList<Asteroid> asteroids;
+	private ArrayList<Item> items;
+	private ArrayList<Explosion> explosions;
+	private int level;
+	private final int rollChance;
 	private boolean isRunning;
 	private boolean isPaused;
 
@@ -38,16 +42,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private int collected, fps, frames;
 	private long lastFrameTime;
 	private long lastAsteroidSpawnTime;
-	private Random random;
+	private long gameTime;
+	private long lastUpdateTime;
+	private long levelTimer;
+	private static final long LEVEL1_DURATION = 120000; // 2 minutes in ms
+	private static final long CANTIME = 10000; // 10 seconds in ms
+	private final Random random;
 	private GameWindow gameWindow;
 
-	private StartScreen startScreen;
+	private final StartScreen startScreen;
 	private boolean showStartScreen;
 
-	private PlayerSelectScreen playerSelectScreen;
+	private final PlayerSelectScreen playerSelectScreen;
 	private boolean showPlayerSelect;
 
-	private PauseScreen pauseScreen;
+	private final PauseScreen pauseScreen;
 	public static int score = 0;
 
 
@@ -67,6 +76,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		ship = null;
 		ship2 = null;
 		twoPlayer = false;
+		level = 1;
+		rollChance = 100;
+		gameTime = 0;
+		lastUpdateTime = System.currentTimeMillis();
+		lastAsteroidSpawnTime = 0;
+		levelTimer = LEVEL1_DURATION;
 
 		image = new BufferedImage (600, 800, BufferedImage.TYPE_INT_RGB);
 
@@ -93,10 +108,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		aliens = new ArrayList<>();
 		backgroundImage = new BackgroundManager(); 
 		asteroids = new ArrayList<>();
-		lastAsteroidSpawnTime = System.currentTimeMillis(); 
-		// First two aliens in line with P1 and P2 start positions for testing
-		aliens.add(new Alien(16, 716, fadeFx));
-		aliens.add(new Alien(500, 716, greenTintFx));
+		items = new ArrayList<>();
+		explosions = new ArrayList<>();
+		// This is done so that the time actually starts when the game entities are created
+		// and not while the player is still on the start screen or player select screen
+		lastUpdateTime = System.currentTimeMillis();
 		ship = new Ship(this, 210, 715, aliens, false);
 		if (twoPlayer) {
 			ship2 = new Ship(this, 310, 715, aliens, true);
@@ -155,6 +171,22 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public void gameUpdate() {
 		int i = 0;
+
+		// update game clock
+		long now = System.currentTimeMillis();
+		long delta = now - lastUpdateTime;
+		gameTime += delta;
+		lastUpdateTime = now;
+
+		// countdown timer for level 1
+		if (level == 1) {
+			levelTimer -= delta;
+			if (levelTimer <= 0) {
+				levelTimer = 0;
+				level = 2;
+			}
+		}
+
 		ship.update();
 		ship.move();
 		ship.fire();
@@ -164,15 +196,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			ship2.fire();
 		}
 
-		// asteroid spawn logic: every 5 seconds, 30% chance to spawn one
-		long now = System.currentTimeMillis();
-		if (now - lastAsteroidSpawnTime >= 5000) {
+		// asteroid spawn logic: every 5 seconds
+		if (gameTime - lastAsteroidSpawnTime >= 5000) {
 			int roll = random.nextInt(100);
-			if (roll < 30) {
+			if (roll < rollChance) {
 				int spawnX = random.nextInt(550);
 				asteroids.add(new Asteroid(spawnX, -50));
 			}
-			lastAsteroidSpawnTime = now;
+			lastAsteroidSpawnTime = gameTime;
 		}
 
 		// update asteroids and remove dead/offscreen ones
@@ -189,6 +220,33 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		if (ship2 != null) {
 			checkProjectileCollisions(ship2.getProjectiles());
 		}
+
+		// update explosions
+		for (int e = explosions.size() - 1; e >= 0; e--) {
+			explosions.get(e).update();
+			if (!explosions.get(e).isActive()) {
+				explosions.remove(e);
+			}
+		}
+
+		// update items and check collection
+		for (int it = items.size() - 1; it >= 0; it--) {
+			Item item = items.get(it);
+			item.update();
+			if (!item.isActive()) {
+				items.remove(it);
+				continue;
+			}
+			if (item.getBoundingRectangle().intersects(ship.getBoundingRectangle())) {
+				collectItem(item);
+				items.remove(it);
+				continue;
+			}
+			if (ship2 != null && item.getBoundingRectangle().intersects(ship2.getBoundingRectangle())) {
+				collectItem(item);
+				items.remove(it);
+			}
+		}
 	}
 
 	private void checkProjectileCollisions(ArrayList<Projectile> projectiles) {
@@ -197,11 +255,34 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			for (int a = asteroids.size() - 1; a >= 0; a--) {
 				Asteroid ast = asteroids.get(a);
 				if (ast.isAlive() && ast.collidesWith(proj.getBoundingRectangle())) {
+					explosions.add(new Explosion(ast.getX() - 25, ast.getY() - 25, ast.getSize() + 50));
 					ast.destroy();
 					projectiles.remove(p);
 					score += 10;
+					spawnItemDrop(ast.getX() + ast.getSize() / 2, ast.getY());
 					break;
 				}
+			}
+		}
+	}
+
+	private void spawnItemDrop(int x, int y) {
+		if (level == 1) {
+			items.add(new EnergyCanister(x - 15, y));
+		} else if (level == 2) {
+			items.add(new PowerGem(x - 12, y));
+		}
+	}
+
+	private void collectItem(Item item) {
+		if (item instanceof EnergyCanister energyCanister) {
+			energyCanister.collect();
+			levelTimer += CANTIME;
+		} else if (item instanceof PowerGem powerGem) {
+			powerGem.collect();
+			ship.increaseDamage(1);
+			if (ship2 != null) {
+				ship2.increaseDamage(1);
 			}
 		}
 	}
@@ -237,6 +318,47 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			for (Asteroid ast : asteroids) {
 				ast.draw(imageContext);
 			}
+		}
+
+		if (explosions != null) {
+			for (Explosion exp : explosions) {
+				exp.draw(imageContext);
+			}
+		}
+
+		if (items != null) {
+			for (Item item : items) {
+				item.draw(imageContext);
+			}
+		}
+
+		// draw timer
+		if (level == 1) {
+			long seconds = Math.max(levelTimer / 1000, 0);
+			long mins = seconds / 60;
+			long secs = seconds % 60;
+			String timerStr = String.format("%d:%02d", mins, secs);
+
+			int boxX = 460;
+			int boxY = 8;
+			int boxW = 130;
+			int boxH = 50;
+
+			// background box
+			imageContext.setColor(new Color(0, 0, 0, 150));
+			imageContext.fillRoundRect(boxX, boxY, boxW, boxH, 12, 12);
+			imageContext.setColor(new Color(100, 200, 255));
+			imageContext.drawRoundRect(boxX, boxY, boxW, boxH, 12, 12);
+
+			// label
+			imageContext.setColor(new Color(180, 180, 180));
+			imageContext.setFont(new Font("Arial", Font.PLAIN, 11));
+			imageContext.drawString("TIME REMAINING", boxX + 25, boxY + 15);
+
+			// timer value
+			imageContext.setColor(Color.WHITE);
+			imageContext.setFont(new Font("Arial", Font.BOLD, 24));
+			imageContext.drawString(timerStr, boxX + 38, boxY + 42);
 		}
 
 		// draw pause button and score on the image
@@ -284,6 +406,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		if (isRunning) {
 			if (isPaused) {
 				isPaused = false;
+				lastUpdateTime = System.currentTimeMillis();
 				soundManager.resumeClip("bgm");
 			} else {
 				isPaused = true;
