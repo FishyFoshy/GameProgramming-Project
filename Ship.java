@@ -129,8 +129,8 @@ public class Ship {
       if(right){
          nextAnimation = rightAnimation;
       }
-      if(!left && ! right){
-         movementAnimation = null;
+      if((!left && !right) || (left && right)){
+         nextAnimation = idleAnimation;
       }
 
       if(nextAnimation != movementAnimation && nextAnimation != null){
