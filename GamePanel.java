@@ -1,3 +1,7 @@
+import GameEntities.*;
+import ImageManip.*;
+import Misc.SoundManager;
+import Screens.*;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -8,15 +12,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.Random;
-import java.util.Set;
 import javax.swing.JPanel;
-
-import GameEntities.*;
-import ImageManip.*;
-import Misc.SoundManager;
-import Screens.*;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener {
    
@@ -200,6 +197,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			if (levelTimer <= 0) {
 				levelTimer = 0;
 				level = 2;
+				soundManager.stopClip("bgm");
+				soundManager.playAfter("incoming-boss", "boss", true);
 			}
 		}
 
@@ -289,6 +288,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				Asteroid ast = asteroids.get(a);
 				if (ast.isAlive() && ast.collidesWith(proj.getBoundingRectangle())) {
 					explosions.add(new Explosion(ast.getX() - 25, ast.getY() - 25, ast.getSize() + 50));
+					soundManager.playClip("explosion", false);
 					ast.destroy();
 					projectiles.remove(p);
 					score += 10;
@@ -310,9 +310,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private void collectItem(Item item) {
 		if (item instanceof EnergyCanister energyCanister) {
 			energyCanister.collect();
+			soundManager.playClip("canister", false);
 			levelTimer += CANTIME;
 		} else if (item instanceof PowerGem powerGem) {
 			powerGem.collect();
+			soundManager.playClip("powergem", false);
 			ship.increaseDamage(1);
 			if (ship2 != null) {
 				ship2.increaseDamage(1);
@@ -442,10 +444,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			if (isPaused) {
 				isPaused = false;
 				lastUpdateTime = System.currentTimeMillis();
-				soundManager.resumeClip();
+				soundManager.resumeAll();
 			} else {
 				isPaused = true;
-				soundManager.pauseClip();
+				soundManager.pauseAll();
 				// stop ship movement so it doesn't keep going after unpause
 				if (ship != null) {
 					ship.setMoveDirection(-1);
@@ -466,7 +468,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public void endGame() {
 		isRunning = false;
 		gameOver();
-		soundManager.stopClip("bgm");
+		soundManager.pauseAll();
 		soundManager.playClip("game-over", false);
 	}
 
