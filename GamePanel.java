@@ -13,23 +13,10 @@ import java.util.Random;
 import java.util.Set;
 import javax.swing.JPanel;
 
-import GameEntities.Alien;
-import GameEntities.Asteroid;
-import GameEntities.EnergyCanister;
-import GameEntities.Item;
-import GameEntities.PowerGem;
-import GameEntities.Projectile;
-import GameEntities.Ship;
-import ImageManip.FadedFX;
-import ImageManip.GrayScaleFX;
-import ImageManip.ImageFX;
-import ImageManip.TintFX;
+import GameEntities.*;
+import ImageManip.*;
 import Misc.SoundManager;
-import Screens.BackgroundManager;
-import Screens.Explosion;
-import Screens.PauseScreen;
-import Screens.PlayerSelectScreen;
-import Screens.StartScreen;
+import Screens.*;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener {
    
@@ -40,7 +27,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private ArrayList<Item> items;
 	private ArrayList<Explosion> explosions;
 	private int level;
-	private final int rollChance;
+	private final int asteroidChance, alienChance, straightAlien, circularAlien, sineAlien;
 	private boolean isRunning;
 	private boolean isPaused;
 
@@ -52,15 +39,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private Ship ship2;
 	private boolean twoPlayer;
 
-	private ImageFX fadeFx;
 	private ImageFX blueTintFx;
 	private ImageFX redTintFx;
-	private ImageFX greenTintFx;
-	private ImageFX grayFx;
 	private boolean gameOver;
 	private int collected, fps, frames;
 	private long lastFrameTime;
-	private long lastAsteroidSpawnTime;
+	private long lastAsteroidSpawnTime, lastAlienSpawnTime;
 	private long gameTime;
 	private long lastUpdateTime;
 	private long levelTimer;
@@ -82,11 +66,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public GamePanel (GameWindow gW) {
 		gameWindow = gW;
 		collected = 0;
-		fadeFx = new FadedFX();
-		grayFx = new GrayScaleFX();
 		blueTintFx = new TintFX("blue");
 		redTintFx = new TintFX("red");
-		greenTintFx = new TintFX("green");
 		random = new Random();
 		isRunning = false;
 		isPaused = gameOver = false;
@@ -96,10 +77,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		ship2 = null;
 		twoPlayer = false;
 		level = 1;
-		rollChance = 100;
+		asteroidChance = 100;
+		alienChance = 50;
+		straightAlien = 10;
+		sineAlien = 5;
+		circularAlien = 2;
 		gameTime = 0;
 		lastUpdateTime = System.currentTimeMillis();
 		lastAsteroidSpawnTime = 0;
+		lastAlienSpawnTime = 0;
 		levelTimer = LEVEL1_DURATION;
 
 		image = new BufferedImage (600, 800, BufferedImage.TYPE_INT_RGB);
@@ -139,6 +125,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	}
 
 	public void run () {
+		long targetPeriod = 25;
 		try {
 			isRunning = true;
 			soundManager.playClip("mainmenu", true);
@@ -154,7 +141,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 					g2.dispose();
 				}
-				Thread.sleep(50);
+				Thread.sleep(16);
 			}
 
 			// player select screen loop
@@ -168,7 +155,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 					g2.dispose();
 				}
-				Thread.sleep(50);
+				Thread.sleep(16);
 			}
 
 			// initialize game after start screen
@@ -178,18 +165,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 			// game loop
 			while (isRunning) {
+				long beginTime = System.currentTimeMillis();
+
 				if (!isPaused)
 					gameUpdate();
 				gameRender();
 
-				Thread.sleep (25);	
+				long timeTaken = System.currentTimeMillis() - beginTime;
+	            long timeLeft = targetPeriod - timeTaken;
+
+	            // 3. Sleep only for the remaining time in the 50ms window
+	            if (timeLeft > 0) {
+	                Thread.sleep(timeLeft);
+	            }	
 			}
 		}
 		catch(InterruptedException e) {}
 	}
 
 	public void gameUpdate() {
-		int i = 0;
+		for (Alien alien : aliens) {
+			alien.move();
+		}
 
 		// update game clock
 		long now = System.currentTimeMillis();
@@ -214,11 +211,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			ship2.move();
 			ship2.fire();
 		}
+		if(gameTime - lastAlienSpawnTime >= random.nextInt(2000, 5001)){
+			int roll = random.nextInt(100);
+			if(roll < alienChance){
+				int spawnX = random.nextInt(550);
+				roll = random.nextInt(10);
+				if(roll < circularAlien){
+					aliens.add(new Alien(spawnX, 0, redTintFx));
+				}
+				else if(roll < sineAlien){
+					aliens.add(new Alien(spawnX, 0, blueTintFx));
+				}
+				else if(roll < straightAlien){
+					aliens.add(new Alien(spawnX, 0, null));
+				}
+			}
+			lastAlienSpawnTime = gameTime;
+		}
 
 		// asteroid spawn logic: every 5 seconds
 		if (gameTime - lastAsteroidSpawnTime >= 5000) {
 			int roll = random.nextInt(100);
-			if (roll < rollChance) {
+			if (roll < asteroidChance) {
 				int spawnX = random.nextInt(550);
 				asteroids.add(new Asteroid(spawnX, -50));
 			}
@@ -456,29 +470,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	}
 
 	public void gameOver(){
-		image = grayFx.apply(image);
 		Graphics2D g2 = (Graphics2D) getGraphics();
 		g2.drawImage(image, 0, 0, 600, 800, null);
 		g2.setColor(Color.white);
 		g2.setFont(new Font("Arial", Font.BOLD, 40));
 		g2.drawString("GAME OVER", 184, 304);
 		g2.dispose();
-	}
-
-	private String getEffectsString(){
-		ImageFX effect;
-		Set<String> set = new LinkedHashSet<>();
-		String s = "";
-
-		for (Alien alien : aliens) {
-			effect = alien.getEffect();
-			if(effect != null)
-				set.add(effect.getEffectName());
-		}
-
-		s = String.join(", ", set);
-
-		return s;
 	}
 
 	public void keyPressed(KeyEvent e) {

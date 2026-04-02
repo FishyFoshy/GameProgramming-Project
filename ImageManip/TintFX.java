@@ -32,8 +32,9 @@ public class TintFX implements ImageFX {
 		green = (pixel >> 8) & 255;
 		blue = pixel & 255;
 
-		if(color == "red")
+		if(color == "red"){
 			red = truncate (red + tint);
+		}
 		else if(color == "blue")
 			blue = truncate (blue + tint);
 		else if(color == "green")
@@ -65,4 +66,5 @@ public class TintFX implements ImageFX {
 	}
 
 	public String getEffectName(){return "Tint";}
+	public String getColor(){return color;}
 }
