@@ -1,12 +1,15 @@
 package Misc;
-import javax.sound.sampled.*;
 import java.io.*;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import javax.sound.sampled.*;
 
 public class SoundManager {
 	HashMap<String, Clip> clips;
-	HashMap<Clip, Boolean> started;
+	private Set<String> loopingClips;
+	private Set<String> pausedClips;
+	private boolean isPaused;
 
 	private static SoundManager instance = null;	
 
@@ -17,27 +20,36 @@ public class SoundManager {
 		Clip clip;
 
 		clips = new HashMap<String, Clip>();
-		started = new HashMap<Clip, Boolean>();
+		loopingClips = new HashSet<>();
+		pausedClips = new HashSet<>();
+		isPaused = false;
 
 		clip = loadClip("sounds/bgm.wav");
 		clips.put("bgm", clip);
-		started.put(clip, false);
-		
-		clip = loadClip("sounds/start.wav");
-		clips.put("start", clip);
-		started.put(clip, false);
-		
+
 		clip = loadClip("sounds/mainmenu.wav");
 		clips.put("mainmenu", clip);
-		started.put(clip, false);
-		
-		clip = loadClip("sounds/collect.wav");
-		clips.put("collect", clip);
-		started.put(clip, false);
-		
-		clip = loadClip("sounds/over.wav");
+
+		clip = loadClip("sounds/death.wav");
 		clips.put("game-over", clip);
-		started.put(clip, false);
+
+		clip = loadClip("sounds/start.wav");
+		clips.put("start", clip);
+
+		clip = loadClip("sounds/explosion.wav");
+		clips.put("explosion", clip);
+
+		clip = loadClip("sounds/canister.wav");
+		clips.put("canister", clip);
+
+		clip = loadClip("sounds/gem.wav");
+		clips.put("powergem", clip);
+
+		clip = loadClip("sounds/startofboss.wav");
+		clips.put("incoming-boss", clip);
+
+		clip = loadClip("sounds/boss.wav");
+		clips.put("boss", clip);
 
 		volume = 1.0f;
 	}
@@ -76,48 +88,81 @@ public class SoundManager {
 			if (clip.isRunning())
 				return;
 			clip.setFramePosition(0);
-			if (looping)
+			if (looping) {
+				loopingClips.add(title);
 				clip.loop(Clip.LOOP_CONTINUOUSLY);
-			else
+			} else {
+				loopingClips.remove(title);
 				clip.start();
+			}
 		}
-		started.replace(clip, true);
 	}
 	
 	public void stopClip(String title) {
 		Clip clip = getClip(title);
 		if (clip != null) {
 			clip.stop();
+			loopingClips.remove(title);
+			pausedClips.remove(title);
 		}
-		started.replace(clip, false);
 	}
 
-	public void pauseClip() {
-		for (Map.Entry<String, Clip> entry : clips.entrySet()) {
-			String key = entry.getKey();
+	public void pauseAll() {
+		isPaused = true;
+		pausedClips.clear();
+		for (var entry : clips.entrySet()) {
 			Clip clip = entry.getValue();
-
-			if (started.get(clip)) {
+			if (clip != null && clip.isRunning()) {
+				pausedClips.add(entry.getKey());
 				clip.stop();
 			}
-			
+		}
+	}
+
+	public void resumeAll() {
+		isPaused = false;
+		for (String title : pausedClips) {
+			Clip clip = getClip(title);
 			if (clip != null) {
-				
+				if (loopingClips.contains(title)) {
+					clip.loop(Clip.LOOP_CONTINUOUSLY);
+				} else {
+					clip.start();
+				}
+			}
+		}
+		pausedClips.clear();
+	}
+
+	public void resumeClip(String title) {
+		Clip clip = getClip(title);
+		if (clip != null) {
+			if (loopingClips.contains(title)) {
+				clip.loop(Clip.LOOP_CONTINUOUSLY);
+			} else {
+				clip.start();
 			}
 		}
 	}
 
-	public void resumeClip() {
-		for (Map.Entry<String, Clip> entry : clips.entrySet()) {
-			String key = entry.getKey();
-			Clip clip = entry.getValue();
+	public boolean isPaused() {
+		return isPaused;
+	}
 
-			if(started.get(clip)){
-				clip.start();;
+	public void playAfter(String firstTitle, String nextTitle, boolean loopNext) {
+		Clip firstClip = getClip(firstTitle);
+		if (firstClip == null) return;
+		LineListener listener = new LineListener() {
+			@Override
+			public void update(LineEvent event) {
+				if (event.getType() == LineEvent.Type.STOP) {
+					if (isPaused) return;
+					firstClip.removeLineListener(this);
+					playClip(nextTitle, loopNext);
+				}
 			}
-			if (clip != null) {
-				
-			}
-		}
+		};
+		firstClip.addLineListener(listener);
+		playClip(firstTitle, false);
 	}
 }
