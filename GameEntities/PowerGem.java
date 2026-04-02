@@ -1,6 +1,9 @@
+package GameEntities;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+
+import ImageManip.ImageManager;
 
 public class PowerGem implements Item {
     private int x, y;
@@ -14,7 +17,7 @@ public class PowerGem implements Item {
         this.y = startY;
         this.width = 25;
         this.height = 25;
-        this.dy = 2;
+        this.dy = 4;
         this.active = true;
 
         image = ImageManager.loadBufferedImage("images/powerGem.png");
