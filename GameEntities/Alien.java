@@ -12,7 +12,7 @@ import java.awt.Image;
 
 public class Alien {
    private int x;
-   private int y;
+   private int y, dy;
    
    private int width;
    private int height;
@@ -26,7 +26,7 @@ public class Alien {
       height = 50;
 
       this.effect = effect;
-
+      dy = 2;
       x = xPos;
       y = yPos;
 
@@ -40,6 +40,13 @@ public class Alien {
 
       if(alienImage != null){
          g2.drawImage(drawnImage, x, y, width, height, null);
+      }
+   }
+
+   public void move(){
+      y += dy;
+      if(y > 100){
+         y = 100;
       }
    }
 
