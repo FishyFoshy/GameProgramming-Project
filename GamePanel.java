@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -11,6 +12,24 @@ import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 import javax.swing.JPanel;
+
+import GameEntities.Alien;
+import GameEntities.Asteroid;
+import GameEntities.EnergyCanister;
+import GameEntities.Item;
+import GameEntities.PowerGem;
+import GameEntities.Projectile;
+import GameEntities.Ship;
+import ImageManip.FadedFX;
+import ImageManip.GrayScaleFX;
+import ImageManip.ImageFX;
+import ImageManip.TintFX;
+import Misc.SoundManager;
+import Screens.BackgroundManager;
+import Screens.Explosion;
+import Screens.PauseScreen;
+import Screens.PlayerSelectScreen;
+import Screens.StartScreen;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener {
    
@@ -346,14 +365,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 			// background box
 			imageContext.setColor(new Color(0, 0, 0, 150));
+			imageContext.setStroke(new BasicStroke(3f));
 			imageContext.fillRoundRect(boxX, boxY, boxW, boxH, 12, 12);
 			imageContext.setColor(new Color(100, 200, 255));
 			imageContext.drawRoundRect(boxX, boxY, boxW, boxH, 12, 12);
 
 			// label
 			imageContext.setColor(new Color(180, 180, 180));
-			imageContext.setFont(new Font("Arial", Font.PLAIN, 11));
-			imageContext.drawString("TIME REMAINING", boxX + 25, boxY + 15);
+			imageContext.setFont(new Font("Arial", Font.BOLD, 12));
+			imageContext.drawString("TIME REMAINING", boxX + 18, boxY + 15);
 
 			// timer value
 			imageContext.setColor(Color.WHITE);

@@ -1,51 +1,49 @@
+package GameEntities;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-public class CircularProjectile implements Projectile {
+public class SineProjectile implements Projectile {
     private int x, y;
     private int size;
     private int dy;
     private boolean active;
     private boolean isShip;
 
-    private int centreY, centreX, radius, degree;
+    private double amplitudeFactor;
+    private double frequencyFactor;
+    private int yAxis;
 
-    public CircularProjectile(int startX, int startY, boolean isShip) {
+    public SineProjectile(int startX, int startY, boolean isShip) {
         this.x = startX;
         this.y = startY;
-        this.centreX = startX;
-        this.centreY = startY;
+        this.yAxis = startX;
         this.size = 8;
-        this.dy = 3;
+        this.dy = 4;
         this.active = true;
         this.isShip = isShip;
-        radius = 75;
-        degree = 75;
+        amplitudeFactor = 75;
+        frequencyFactor = 1;
     }
 
     public void update() {
         if (active) {
-            degree = degree + 9;
-            if (degree > 360)
-                degree = 0;
-
-            double radians = (degree / 180.0) * Math.PI;
-            x = (int) (radius * Math.cos (radians)) + centreX + 5;
             if (isShip) {
-                radians = radians * -1;
-                y = (centreY - 55 - (int) (radius * Math.sin (radians) * 1));
-                centreY -= dy;
+                y -= dy;
                 if (y + size < 0) {
                     active = false;
                 }
             } else {
-                y = (centreY + 55 - (int) (radius * Math.sin (radians) * 1));
-                centreY += dy;
+                y += dy;
                 if (y > 800) {
                     active = false;
                 }
             }
+            double radians = (2*y / 180.0) * Math.PI * frequencyFactor;
+
+            x = (int) (Math.sin (radians) * amplitudeFactor);
+
+            x = yAxis - x;
         }
     }
 

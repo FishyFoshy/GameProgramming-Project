@@ -1,4 +1,7 @@
+package Screens;
 import java.awt.Graphics2D;
+
+import Misc.Animation;
 
 public class Explosion {
     private int x, y;

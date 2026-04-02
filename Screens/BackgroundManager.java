@@ -1,4 +1,8 @@
+package Screens;
 import java.util.List;
+
+import ImageManip.ImageManager;
+
 import java.util.ArrayList;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;

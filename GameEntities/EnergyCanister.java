@@ -1,5 +1,8 @@
+package GameEntities;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+
+import Misc.Animation;
 
 public class EnergyCanister implements Item {
     private int x, y;
@@ -13,7 +16,7 @@ public class EnergyCanister implements Item {
         this.y = startY;
         this.width = 30;
         this.height = 40;
-        this.dy = 2;
+        this.dy = 4;
         this.active = true;
 
         animation = new Animation(true, "images/sodaCan.png", 4, 3, 100);

@@ -1,28 +1,28 @@
+package GameEntities;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-public class SineProjectile implements Projectile {
+public class StraightProjectile implements Projectile {
     private int x, y;
     private int size;
     private int dy;
     private boolean active;
     private boolean isShip;
+    private int damage;
 
-    private double amplitudeFactor;
-    private double frequencyFactor;
-    private int yAxis;
-
-    public SineProjectile(int startX, int startY, boolean isShip) {
+    public StraightProjectile(int startX, int startY, boolean isShip, int damage) {
         this.x = startX;
         this.y = startY;
-        this.yAxis = startX;
         this.size = 8;
-        this.dy = 4;
+        this.dy = 10;
         this.active = true;
         this.isShip = isShip;
-        amplitudeFactor = 75;
-        frequencyFactor = 1;
+        this.damage = damage;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     public void update() {
@@ -38,11 +38,6 @@ public class SineProjectile implements Projectile {
                     active = false;
                 }
             }
-            double radians = (2*y / 180.0) * Math.PI * frequencyFactor;
-
-            x = (int) (Math.sin (radians) * amplitudeFactor);
-
-            x = yAxis - x;
         }
     }
 
