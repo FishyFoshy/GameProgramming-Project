@@ -16,6 +16,7 @@ public class Ship {
    private static final long FIRE_COOLDOWN = 300;
 
    private int dx;
+   private int damage;
 
    private Dimension dimension;
 
@@ -47,6 +48,7 @@ public class Ship {
       lastFireTime = 0;
 
       dx = 10;
+      damage = 1;
 
       soundManager = SoundManager.getInstance();
 
@@ -73,7 +75,7 @@ public class Ship {
       if (firing && now - lastFireTime >= FIRE_COOLDOWN) {
          int bulletX = x + width / 2 - 4;
          int bulletY = y;
-         projectiles.add(new StraightProjectile(bulletX, bulletY, true));
+         projectiles.add(new StraightProjectile(bulletX, bulletY, true, damage));
          lastFireTime = now;
       }
    }
@@ -155,6 +157,14 @@ public class Ship {
       return new Rectangle2D.Double (x+15, y, width-30, height);
    }
    
+   public void increaseDamage(int amount) {
+      damage += amount;
+   }
+
+   public int getDamage() {
+      return damage;
+   }
+
    public void collidesWithAlien(){
       for(Alien alien : aliens){
       }
