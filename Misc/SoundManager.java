@@ -110,10 +110,10 @@ public class SoundManager {
 	public void pauseAll() {
 		isPaused = true;
 		pausedClips.clear();
-		for (var entry : clips.entrySet()) {
-			Clip clip = entry.getValue();
+		for (String title : clips.keySet()) {
+			Clip clip = clips.get(title);
 			if (clip != null && clip.isRunning()) {
-				pausedClips.add(entry.getKey());
+				pausedClips.add(title);
 				clip.stop();
 			}
 		}
@@ -122,14 +122,7 @@ public class SoundManager {
 	public void resumeAll() {
 		isPaused = false;
 		for (String title : pausedClips) {
-			Clip clip = getClip(title);
-			if (clip != null) {
-				if (loopingClips.contains(title)) {
-					clip.loop(Clip.LOOP_CONTINUOUSLY);
-				} else {
-					clip.start();
-				}
-			}
+			resumeClip(title);
 		}
 		pausedClips.clear();
 	}
@@ -152,16 +145,16 @@ public class SoundManager {
 	public void playAfter(String firstTitle, String nextTitle, boolean loopNext) {
 		Clip firstClip = getClip(firstTitle);
 		if (firstClip == null) return;
+
 		LineListener listener = new LineListener() {
-			@Override
 			public void update(LineEvent event) {
-				if (event.getType() == LineEvent.Type.STOP) {
-					if (isPaused) return;
+				if (event.getType() == LineEvent.Type.STOP && !isPaused) {
 					firstClip.removeLineListener(this);
 					playClip(nextTitle, loopNext);
 				}
 			}
 		};
+
 		firstClip.addLineListener(listener);
 		playClip(firstTitle, false);
 	}
