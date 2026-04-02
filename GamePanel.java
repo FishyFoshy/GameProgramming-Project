@@ -433,6 +433,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		twoPlayer = two;
 		showPlayerSelect = false;
 		soundManager.stopClip("mainmenu");
+		soundManager.playClip("start", false);
 		requestFocus();
 	}
 
@@ -441,10 +442,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			if (isPaused) {
 				isPaused = false;
 				lastUpdateTime = System.currentTimeMillis();
-				soundManager.resumeClip("bgm");
+				soundManager.resumeClip();
 			} else {
 				isPaused = true;
-				soundManager.pauseClip("bgm");
+				soundManager.pauseClip();
 				// stop ship movement so it doesn't keep going after unpause
 				if (ship != null) {
 					ship.setMoveDirection(-1);
