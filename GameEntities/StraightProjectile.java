@@ -59,6 +59,10 @@ public class StraightProjectile implements Projectile {
         return active;
     }
 
+    public boolean isShip() {
+        return isShip;
+    }
+
     public void deactivate() {
         active = false;
     }

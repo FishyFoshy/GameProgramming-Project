@@ -41,6 +41,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private ImageFX blueTintFx;
 	private ImageFX redTintFx;
 	private boolean gameOver;
+	private boolean bossDefeated;
 	private int collected, fps, frames;
 	private long lastFrameTime;
 	private long lastAsteroidSpawnTime, lastAlienSpawnTime;
@@ -48,7 +49,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private long lastUpdateTime;
 	private long levelTimer;
 	private long level2StartTime;
-	private static final long LEVEL1_DURATION = 120000; // 2 minutes in ms
+	private static final long LEVEL1_DURATION = 180000; // 3 minutes in ms
 	private static final long CANTIME = 10000; // 10 seconds in ms
 	private final Random random;
 	private GameWindow gameWindow;
@@ -69,6 +70,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		collected = 0;
 		blueTintFx = new TintFX("blue");
 		redTintFx = new TintFX("red");
+		bossDefeated = false;
 		random = new Random();
 		isRunning = false;
 		isPaused = gameOver = false;
@@ -125,6 +127,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		if (twoPlayer) {
 			ship2 = new Ship(this, 310, 715, aliens, true);
 		}
+		bossDefeated = false;
 	}
 
 	public void run () {
@@ -231,18 +234,30 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				soundManager.playClip("explosion", false);
 				score += 10000;
 				boss = null;
+				bossDefeated = true;
+				ship.setFiring(false);
+				ship.setMoveDirection(-1);
+				ship.setMoveDirection(-2);
+				if (ship2 != null) {
+					ship2.setFiring(false);
+					ship2.setMoveDirection(-1);
+					ship2.setMoveDirection(-2);
+				}
+				soundManager.playClip("winning", false);
 			}
 		}
 
-		ship.update();
-		ship.move();
-		if (ship2 != null) {
-			ship2.update();
-			ship2.move();
+		if (!bossDefeated) {
+			ship.update();
+			ship.move();
+			if (ship2 != null) {
+				ship2.update();
+				ship2.move();
+			}
 		}
 
 		// only allow firing in level 1, or in level 2 after the boss health bar fills up
-		boolean canFire = (level == 1) || (boss != null && boss.isHealthBarFull());
+		boolean canFire = !bossDefeated && ((level == 1) || (boss != null && boss.isHealthBarFull()));
 		if (canFire) {
 			ship.fire();
 			if (ship2 != null) {
@@ -333,7 +348,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			Projectile proj = projectiles.get(p);
 			for (int a = asteroids.size() - 1; a >= 0; a--) {
 				Asteroid ast = asteroids.get(a);
-				if (ast.isAlive() && ast.collidesWith(proj.getBoundingRectangle())) {
+				if (proj.isShip() && ast.isAlive() && ast.collidesWith(proj.getBoundingRectangle())) {
 					explosions.add(new Explosion(ast.getX() - 25, ast.getY() - 25, ast.getSize() + 50));
 					soundManager.playClip("explosion", false);
 					ast.destroy();
@@ -381,7 +396,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	}
 
 	public void updateShip (int direction) {
-		if (backgroundImage != null && !isPaused) {
+		if (backgroundImage != null && !isPaused && !bossDefeated) {
 			ship.setMoveDirection(direction);
 		}
 	}
@@ -469,9 +484,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			pauseScreen.drawPauseMenu(imageContext);
 		}
 
+		if (bossDefeated) {
+			imageContext.setColor(new Color(0, 0, 0, 180));
+			imageContext.fillRect(0, 0, 600, 800);
+			imageContext.setColor(Color.WHITE);
+			imageContext.setFont(new Font("Arial", Font.BOLD, 60));
+			String winText = "You Win!";
+			int tw = imageContext.getFontMetrics().stringWidth(winText);
+			imageContext.drawString(winText, (600 - tw) / 2, 80);
+		}
+
 		Graphics2D g2 = (Graphics2D) getGraphics();
 		g2.drawImage(image, 0, 0, 600, 800, null);
-
 		imageContext.dispose();
 		g2.dispose();
 
@@ -553,9 +577,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			updateShip(1);
 		if (keyCode == KeyEvent.VK_D)
 			updateShip(2);
-		if (keyCode == KeyEvent.VK_W && ship != null && !isPaused)
+		if (keyCode == KeyEvent.VK_W && ship != null && !isPaused && !bossDefeated)
 			ship.setFiring(true);
-		if (ship2 != null && !isPaused) {
+		if (ship2 != null && !isPaused && !bossDefeated) {
 			if (keyCode == KeyEvent.VK_LEFT)
 				ship2.setMoveDirection(1);
 			if (keyCode == KeyEvent.VK_RIGHT)
