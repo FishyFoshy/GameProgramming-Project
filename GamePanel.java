@@ -23,6 +23,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private ArrayList<Asteroid> asteroids;
 	private ArrayList<Item> items;
 	private ArrayList<Explosion> explosions;
+	private Boss boss;
+	private boolean bossSpawnedOnce;
 	private int level;
 	private final int asteroidChance, alienChance, straightAlien, circularAlien, sineAlien;
 	private boolean isRunning;
@@ -45,6 +47,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private long gameTime;
 	private long lastUpdateTime;
 	private long levelTimer;
+	private long level2StartTime;
 	private static final long LEVEL1_DURATION = 120000; // 2 minutes in ms
 	private static final long CANTIME = 10000; // 10 seconds in ms
 	private final Random random;
@@ -62,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public GamePanel (GameWindow gW) {
 		gameWindow = gW;
+		bossSpawnedOnce = false;
 		collected = 0;
 		blueTintFx = new TintFX("blue");
 		redTintFx = new TintFX("red");
@@ -115,6 +119,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		// This is done so that the time actually starts when the game entities are created
 		// and not while the player is still on the start screen or player select screen
 		lastUpdateTime = System.currentTimeMillis();
+		boss = null;
+		bossSpawnedOnce = false;
 		ship = new Ship(this, 210, 715, aliens, false);
 		if (twoPlayer) {
 			ship2 = new Ship(this, 310, 715, aliens, true);
@@ -197,20 +203,53 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			if (levelTimer <= 0) {
 				levelTimer = 0;
 				level = 2;
+				level2StartTime = gameTime;
+				aliens.clear();
 				soundManager.stopClip("bgm");
 				soundManager.playAfter("incoming-boss", "boss", true);
 			}
 		}
 
+		if (level == 2 && boss == null && !bossSpawnedOnce && gameTime - level2StartTime >= 8000) {
+			boss = new Boss(600, twoPlayer);
+			bossSpawnedOnce = true;
+		}
+
+		if (boss != null) {
+			boss.update();
+			// if boss just died, spawn multiple explosions over its sprite and remove it
+			if (!boss.isAlive()) {
+				int explCount = 10;
+				for (int i = 0; i < explCount; i++) {
+					int size = random.nextInt(40, 121);
+					int exX = boss.getX() + random.nextInt(boss.getWidth());
+					int exY = boss.getY() + random.nextInt(boss.getHeight());
+					explosions.add(new Explosion(exX - size/2, exY - size/2, size));
+				}
+				// stop boss music/loop and play explosion sounds
+				soundManager.stopClip("boss");
+				soundManager.playClip("explosion", false);
+				score += 10000;
+				boss = null;
+			}
+		}
+
 		ship.update();
 		ship.move();
-		ship.fire();
 		if (ship2 != null) {
 			ship2.update();
 			ship2.move();
-			ship2.fire();
 		}
-		if(gameTime - lastAlienSpawnTime >= random.nextInt(2000, 5001)){
+
+		// only allow firing in level 1, or in level 2 after the boss health bar fills up
+		boolean canFire = (level == 1) || (boss != null && boss.isHealthBarFull());
+		if (canFire) {
+			ship.fire();
+			if (ship2 != null) {
+				ship2.fire();
+			}
+		}
+		if(level == 1 && gameTime - lastAlienSpawnTime >= random.nextInt(2000, 5001)){
 			int roll = random.nextInt(100);
 			if(roll < alienChance){
 				int spawnX = random.nextInt(550);
@@ -253,6 +292,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			checkProjectileCollisions(ship2.getProjectiles());
 		}
 
+		// check projectile-boss collisions
+		if (boss != null && boss.isAlive() && !boss.isSlidingIn()) {
+			checkBossCollisions(ship.getProjectiles());
+			if (ship2 != null) {
+				checkBossCollisions(ship2.getProjectiles());
+			}
+		}
+
 		// update explosions
 		for (int e = explosions.size() - 1; e >= 0; e--) {
 			explosions.get(e).update();
@@ -270,12 +317,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				continue;
 			}
 			if (item.getBoundingRectangle().intersects(ship.getBoundingRectangle())) {
-				collectItem(item);
+				collectItem(item, ship);
 				items.remove(it);
 				continue;
 			}
 			if (ship2 != null && item.getBoundingRectangle().intersects(ship2.getBoundingRectangle())) {
-				collectItem(item);
+				collectItem(item, ship2);
 				items.remove(it);
 			}
 		}
@@ -307,7 +354,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		}
 	}
 
-	private void collectItem(Item item) {
+	private void checkBossCollisions(ArrayList<Projectile> projectiles) {
+		for (int p = projectiles.size() - 1; p >= 0; p--) {
+			Projectile proj = projectiles.get(p);
+			if (boss.getBoundingRectangle().intersects(proj.getBoundingRectangle())) {
+				int dmg = 1;
+				if (proj instanceof StraightProjectile sp) {
+					dmg = sp.getDamage();
+				}
+				boss.takeDamage(dmg);
+				projectiles.remove(p);
+			}
+		}
+	}
+
+	private void collectItem(Item item, Ship collector) {
 		if (item instanceof EnergyCanister energyCanister) {
 			energyCanister.collect();
 			soundManager.playClip("canister", false);
@@ -315,10 +376,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		} else if (item instanceof PowerGem powerGem) {
 			powerGem.collect();
 			soundManager.playClip("powergem", false);
-			ship.increaseDamage(1);
-			if (ship2 != null) {
-				ship2.increaseDamage(1);
-			}
+			collector.increaseDamage(1);
 		}
 	}
 
@@ -339,6 +397,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			for(Alien alien : aliens){
 				alien.draw(imageContext);
 			}
+		}
+
+		if (boss != null) {
+			boss.draw(imageContext);
+			boss.drawHealthBar(imageContext);
 		}
 
 		if (ship != null) {
