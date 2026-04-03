@@ -7,4 +7,5 @@ public interface Projectile {
     void draw(Graphics2D g2);
     Rectangle2D.Double getBoundingRectangle();
     boolean isActive();
+    boolean isShip();
 }

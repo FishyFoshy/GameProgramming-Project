@@ -51,6 +51,9 @@ public class SoundManager {
 		clip = loadClip("sounds/boss.wav");
 		clips.put("boss", clip);
 
+		clip = loadClip("sounds/winning.wav");
+		clips.put("winning", clip);
+
 		volume = 1.0f;
 	}
 
