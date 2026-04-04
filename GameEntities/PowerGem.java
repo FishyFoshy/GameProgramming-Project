@@ -1,9 +1,9 @@
 package GameEntities;
+import ImageManip.GlowFX;
+import ImageManip.ImageManager;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-
-import ImageManip.ImageManager;
 
 public class PowerGem implements Item {
     private int x, y;
@@ -11,6 +11,8 @@ public class PowerGem implements Item {
     private int dy;
     private boolean active;
     private BufferedImage image;
+    private GlowFX glowFX;
+    private static final int GLOW_PAD = 6;
 
     public PowerGem(int startX, int startY) {
         this.x = startX;
@@ -21,6 +23,7 @@ public class PowerGem implements Item {
         this.active = true;
 
         image = ImageManager.loadBufferedImage("images/powerGem.png");
+        glowFX = new GlowFX(255, 215, 0, 180);
     }
 
     public void update() {
@@ -30,6 +33,10 @@ public class PowerGem implements Item {
 
     public void draw(Graphics2D g2) {
         if (!active) return;
+
+        BufferedImage glowImage = glowFX.apply(image);
+        g2.drawImage(glowImage, x - GLOW_PAD, y - GLOW_PAD,
+                     width + GLOW_PAD * 2, height + GLOW_PAD * 2, null);
         g2.drawImage(image, x, y, width, height, null);
     }
 
