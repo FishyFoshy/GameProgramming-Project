@@ -145,6 +145,18 @@ public class SoundManager {
 		return isPaused;
 	}
 
+	public void stopAll() {
+		for (String title : clips.keySet()) {
+			Clip clip = clips.get(title);
+			if (clip != null) {
+				clip.stop();
+			}
+		}
+		loopingClips.clear();
+		pausedClips.clear();
+		isPaused = false;
+	}
+
 	public void playAfter(String firstTitle, String nextTitle, boolean loopNext) {
 		Clip firstClip = getClip(firstTitle);
 		if (firstClip == null) return;

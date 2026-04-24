@@ -61,6 +61,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private boolean showPlayerSelect;
 
 	private final PauseScreen pauseScreen;
+	private final GameOverScreen gameOverScreen;
 	public static int score = 0;
 
 
@@ -100,6 +101,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		showPlayerSelect = false;
 
 		pauseScreen = new PauseScreen(600, 800);
+		gameOverScreen = new GameOverScreen(600, 800);
 
 		setFocusable(true);
 		addKeyListener(this);
@@ -136,54 +138,57 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			isRunning = true;
 			soundManager.playClip("mainmenu", true);
 
-			// start screen loop
-			while (isRunning && showStartScreen) {
-				Graphics2D imageContext = (Graphics2D) image.getGraphics();
-				startScreen.draw(imageContext);
-				imageContext.dispose();
-
-				Graphics2D g2 = (Graphics2D) getGraphics();
-				if (g2 != null) {
-					g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-					g2.dispose();
-				}
-				Thread.sleep(16);
-			}
-
-			// player select screen loop
-			while (isRunning && showPlayerSelect) {
-				Graphics2D imageContext = (Graphics2D) image.getGraphics();
-				playerSelectScreen.draw(imageContext);
-				imageContext.dispose();
-
-				Graphics2D g2 = (Graphics2D) getGraphics();
-				if (g2 != null) {
-					g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
-					g2.dispose();
-				}
-				Thread.sleep(16);
-			}
-
-			// initialize game after start screen
-			isPaused = gameOver = false;
-			soundManager.playClip("bgm", true);
-			createGameEntities();
-
-			// game loop
 			while (isRunning) {
-				long beginTime = System.currentTimeMillis();
+				// start screen loop
+				while (isRunning && showStartScreen) {
+					Graphics2D imageContext = (Graphics2D) image.getGraphics();
+					startScreen.draw(imageContext);
+					imageContext.dispose();
 
-				if (!isPaused)
-					gameUpdate();
-				gameRender();
+					Graphics2D g2 = (Graphics2D) getGraphics();
+					if (g2 != null) {
+						g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+						g2.dispose();
+					}
+					Thread.sleep(16);
+				}
 
-				long timeTaken = System.currentTimeMillis() - beginTime;
-	            long timeLeft = targetPeriod - timeTaken;
+				// player select screen loop
+				while (isRunning && showPlayerSelect) {
+					Graphics2D imageContext = (Graphics2D) image.getGraphics();
+					playerSelectScreen.draw(imageContext);
+					imageContext.dispose();
 
-	            // 3. Sleep only for the remaining time in the 50ms window
-	            if (timeLeft > 0) {
-	                Thread.sleep(timeLeft);
-	            }	
+					Graphics2D g2 = (Graphics2D) getGraphics();
+					if (g2 != null) {
+						g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+						g2.dispose();
+					}
+					Thread.sleep(16);
+				}
+
+				if (!isRunning) break;
+
+				// initialize game after start screen
+				isPaused = gameOver = false;
+				soundManager.playClip("bgm", true);
+				createGameEntities();
+
+				// game loop
+				while (isRunning && !showStartScreen) {
+					long beginTime = System.currentTimeMillis();
+
+					if (!isPaused && !gameOver)
+						gameUpdate();
+					gameRender();
+
+					long timeTaken = System.currentTimeMillis() - beginTime;
+		            long timeLeft = targetPeriod - timeTaken;
+
+		            if (timeLeft > 0) {
+		                Thread.sleep(timeLeft);
+		            }
+				}
 			}
 		}
 		catch(InterruptedException e) {}
@@ -305,6 +310,35 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		checkProjectileCollisions(ship.getProjectiles());
 		if (ship2 != null) {
 			checkProjectileCollisions(ship2.getProjectiles());
+		}
+
+		// check asteroid-ship collisions
+		for (int a = asteroids.size() - 1; a >= 0; a--) {
+			Asteroid ast = asteroids.get(a);
+			if (!ast.isAlive()) continue;
+			if (!ship.isDead() && ast.collidesWith(ship.getBoundingRectangle())) {
+				explosions.add(new Explosion((int)ship.getBoundingRectangle().x, (int)ship.getBoundingRectangle().y, 80));
+				soundManager.playClip("explosion", false);
+				ast.destroy();
+				ship.setDead(true);
+				asteroids.remove(a);
+				continue;
+			}
+			if (ship2 != null && !ship2.isDead() && ast.collidesWith(ship2.getBoundingRectangle())) {
+				explosions.add(new Explosion((int)ship2.getBoundingRectangle().x, (int)ship2.getBoundingRectangle().y, 80));
+				soundManager.playClip("explosion", false);
+				ast.destroy();
+				ship2.setDead(true);
+				asteroids.remove(a);
+			}
+		}
+
+		// trigger game over when all ships are dead
+		boolean allDead = ship.isDead() && (ship2 == null || ship2.isDead());
+		if (allDead && !gameOver) {
+			gameOver = true;
+			soundManager.stopAll();
+			soundManager.playClip("game-over", false);
 		}
 
 		// check projectile-boss collisions
@@ -484,6 +518,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			pauseScreen.drawPauseMenu(imageContext);
 		}
 
+		// draw game over screen
+		if (gameOver) {
+			gameOverScreen.draw(imageContext, score);
+		}
+
 		if (bossDefeated) {
 			imageContext.setColor(new Color(0, 0, 0, 180));
 			imageContext.fillRect(0, 0, 600, 800);
@@ -506,9 +545,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			frames = 0;
 			lastFrameTime = currentTime;
 		}
-
-		if(gameOver)
-			endGame();
 	}
 
 	public void startGame() {
@@ -554,19 +590,35 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public void endGame() {
 		isRunning = false;
-		gameOver();
-		soundManager.pauseAll();
-		soundManager.playClip("game-over", false);
 	}
 
-	public void gameOver(){
-		Graphics2D g2 = (Graphics2D) getGraphics();
-		g2.drawImage(image, 0, 0, 600, 800, null);
-		g2.setColor(Color.white);
-		g2.setFont(new Font("Arial", Font.BOLD, 40));
-		g2.drawString("GAME OVER", 184, 304);
-		g2.dispose();
+	public void restartGame() {
+		score = 0;
+		gameOver = false;
+		isPaused = false;
+		bossDefeated = false;
+		level = 1;
+		levelTimer = LEVEL1_DURATION;
+		gameTime = 0;
+		lastUpdateTime = System.currentTimeMillis();
+		lastAsteroidSpawnTime = 0;
+		lastAlienSpawnTime = 0;
+		ship = null;
+		ship2 = null;
+		aliens = null;
+		asteroids = null;
+		items = null;
+		explosions = null;
+		boss = null;
+		backgroundImage = null;
+		twoPlayer = false;
+		showStartScreen = true;
+		showPlayerSelect = false;
+		soundManager.stopAll();
+		soundManager.playClip("mainmenu", true);
 	}
+
+	public void gameOver() {}
 
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
@@ -637,6 +689,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					selectPlayers(false);
 				} else if (clicked.equals("2players")) {
 					selectPlayers(true);
+				}
+			}
+		} else if (isRunning && gameOver) {
+			int mx = e.getX() * 600 / getWidth();
+			int my = e.getY() * 800 / getHeight();
+			String clicked = gameOverScreen.getButtonClicked(mx, my);
+			if (clicked != null) {
+				if (clicked.equals("restart")) {
+					restartGame();
+				} else if (clicked.equals("exit")) {
+					System.exit(0);
 				}
 			}
 		} else if (isRunning && !gameOver) {
