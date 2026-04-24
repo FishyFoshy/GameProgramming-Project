@@ -1,14 +1,13 @@
 package GameEntities;
+import ImageManip.GrayScaleFX;
+import ImageManip.ImageFX;
+import Misc.Animation;
+import Misc.SoundManager;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import javax.swing.JPanel;
-
-import ImageManip.GrayScaleFX;
-import ImageManip.ImageFX;
-import Misc.Animation;
-import Misc.SoundManager;
 
 public class Ship {
    private JPanel panel;
@@ -18,6 +17,7 @@ public class Ship {
    private int y;
    private boolean left, right, isP2;
    private boolean firing;
+   private boolean dead;
    private long lastFireTime;
    private static final long FIRE_COOLDOWN = 300;
 
@@ -52,6 +52,7 @@ public class Ship {
 
       left = right = firing = false;
       lastFireTime = 0;
+      dead = false;
 
       dx = 10;
       damage = 1;
@@ -90,7 +91,11 @@ public class Ship {
       return projectiles;
    }
 
+   public boolean isDead() { return dead; }
+   public void setDead(boolean d) { dead = d; }
+
    public void draw (Graphics2D g2) {
+      if (dead) return;
       if (idleAnimation != null) {
          g2.drawImage(idleAnimation.getImage(), x, y, width, height, null);
       }
@@ -111,6 +116,7 @@ public class Ship {
     }
 
    public void move () {
+      if (dead) return;
       if (!panel.isVisible ()) return;
       
       dimension = panel.getSize();
@@ -130,6 +136,7 @@ public class Ship {
    }
    
 	public void update() {
+      if (dead) return;
       nextAnimation = null;
       if(left){
          nextAnimation = leftAnimation;
