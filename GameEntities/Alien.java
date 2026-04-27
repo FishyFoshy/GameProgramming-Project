@@ -90,12 +90,12 @@ public class Alien {
 	public int getY() { return y; }
 	public int getWidth() { return width; }
 	public int getHeight() { return height; }
-   public long getLastShootTime() { return lastAlienShootTime; }
    public ImageFX getEffect() { 
       if(effect != null)
          return effect;
       return null;
    }
+   public long getLastShootTime() { return lastAlienShootTime; }
    public void setLastShootTime(long gameTime) {
       lastAlienShootTime = gameTime;
    }

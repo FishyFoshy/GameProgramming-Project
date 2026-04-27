@@ -6,6 +6,8 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Boss {
     public static final int BOSS_HEALTH = 500;
@@ -25,6 +27,11 @@ public class Boss {
 
     private final Animation animation;
 
+    private int straight, sine, circle;
+    private Random random;
+
+    private long lastBossShootTime;
+
     public Boss(int screenWidth, boolean twoPlayer) {
         if (twoPlayer) {
             maxHealth = BOSS_HEALTH * 2;
@@ -42,6 +49,14 @@ public class Boss {
         health = maxHealth;
         displayedHealthRatio = 0.0;
         damageFlashTimer = 0;
+
+        straight = 10;
+        sine = 5;
+        circle = 2;
+
+        lastBossShootTime = 0;
+
+        random = new Random();
 
         animation = new Animation(true, "images/BossAlien.png", 6, 3, 100);
         animation.start();
@@ -153,6 +168,20 @@ public class Boss {
         return slidingIn;
     }
 
+    public ArrayList<Projectile> fire(ArrayList<Projectile> projectiles) {
+        int roll = random.nextInt(10);
+         int bulletX = random.nextInt(width + 1) + x;
+         int bulletY = y + width;
+         if(roll < circle)
+            projectiles.add(new CircularProjectile(bulletX, bulletY, false, 2));
+        else if(roll < sine)
+           projectiles.add(new SineProjectile(bulletX, bulletY, false, 1));
+         else if(roll < straight)
+            projectiles.add(new StraightProjectile(bulletX, bulletY, false, 1, 0));
+
+         return projectiles;
+   }
+
     public Rectangle2D.Double getBoundingRectangle() {
         return new Rectangle2D.Double(x, y, width, height);
     }
@@ -162,4 +191,8 @@ public class Boss {
     public int getY() { return y; }
     public int getWidth() { return width; }
     public int getHeight() { return height; }
+    public long getLastShootTime() { return lastBossShootTime; }
+   public void setLastShootTime(long gameTime) {
+      lastBossShootTime = gameTime;
+   }
 }
