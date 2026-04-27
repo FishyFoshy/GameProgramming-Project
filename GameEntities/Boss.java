@@ -13,11 +13,12 @@ public class Boss {
     public static final int BOSS_HEALTH = 500;
 
     private final int maxHealth;
-    private final int x;
+    private int x;
     private int y;
     private final int width, height;
     private final int targetY;
     private final int dy;
+    private int dx;
     private boolean slidingIn;
 
     private int health;
@@ -43,7 +44,7 @@ public class Boss {
         x = (screenWidth - width) / 2;
         y = -height;
         targetY = 80;
-        dy = 1;
+        dy = dx = 1;
         slidingIn = true;
 
         health = maxHealth;
@@ -82,6 +83,16 @@ public class Boss {
 
         if (damageFlashTimer > 0) {
             damageFlashTimer--;
+        }
+
+        if(isHealthBarFull()){
+            // 5% chance per frame to change horizontal direction
+            if (random.nextInt(100) < 5) {
+                dx = random.nextInt(5) - 2;
+            }
+            x += dx;
+            if (x < 0) { x = 0; dx = 0; }
+            if (x > 350) { x = 350; dx = 0; }
         }
 
         animation.update();
@@ -170,8 +181,8 @@ public class Boss {
 
     public ArrayList<Projectile> fire(ArrayList<Projectile> projectiles) {
         int roll = random.nextInt(10);
-         int bulletX = random.nextInt(width + 1) + x;
-         int bulletY = y + width;
+         int bulletX = random.nextInt(251 + 1) + x;
+         int bulletY = y + 180;
          if(roll < circle)
             projectiles.add(new CircularProjectile(bulletX, bulletY, false, 2));
         else if(roll < sine)

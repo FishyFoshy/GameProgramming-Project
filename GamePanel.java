@@ -49,7 +49,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private long lastUpdateTime;
 	private long levelTimer;
 	private long level2StartTime;
-	private static final long LEVEL1_DURATION = 180000; // 3 minutes in ms
+	private static final long LEVEL1_DURATION = 1000; // 3 minutes in ms
 	private static final long CANTIME = 10000; // 10 seconds in ms
 	private final Random random;
 	private GameWindow gameWindow;
@@ -155,7 +155,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 						g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 						g2.dispose();
 					}
-					Thread.sleep(16);
+					Thread.sleep(25);
 				}
 
 				// player select screen loop
@@ -169,7 +169,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 						g2.drawImage(image, 0, 0, getWidth(), getHeight(), null);
 						g2.dispose();
 					}
-					Thread.sleep(16);
+					Thread.sleep(25);
 				}
 
 				if (!isRunning) break;
@@ -363,23 +363,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		}
 
 		// check alien projectile-ship collisions
-		for (Alien alien : aliens) {
-			for (int p = alienProjectiles.size() - 1; p >= 0; p--) {
-				Projectile proj = alienProjectiles.get(p);
-				if (!proj.isActive()) continue;
-				if (!ship.isDead() && proj.getBoundingRectangle().intersects(ship.getBoundingRectangle())) {
-					explosions.add(new Explosion((int)ship.getBoundingRectangle().x, (int)ship.getBoundingRectangle().y, 80));
-					soundManager.playClip("explosion", false);
-					alienProjectiles.remove(p);
-					ship.setDead(true);
-					continue;
-				}
-				if (ship2 != null && !ship2.isDead() && proj.getBoundingRectangle().intersects(ship2.getBoundingRectangle())) {
-					explosions.add(new Explosion((int)ship2.getBoundingRectangle().x, (int)ship2.getBoundingRectangle().y, 80));
-					soundManager.playClip("explosion", false);
-					alienProjectiles.remove(p);
-					ship2.setDead(true);
-				}
+		for (int p = alienProjectiles.size() - 1; p >= 0; p--) {
+			Projectile proj = alienProjectiles.get(p);
+			if (!proj.isActive()) continue;
+			if (!ship.isDead() && proj.getBoundingRectangle().intersects(ship.getBoundingRectangle())) {
+				explosions.add(new Explosion((int)ship.getBoundingRectangle().x, (int)ship.getBoundingRectangle().y, 80));
+				soundManager.playClip("explosion", false);
+				alienProjectiles.remove(p);
+				ship.setDead(true);
+				continue;
+			}
+			if (ship2 != null && !ship2.isDead() && proj.getBoundingRectangle().intersects(ship2.getBoundingRectangle())) {
+				explosions.add(new Explosion((int)ship2.getBoundingRectangle().x, (int)ship2.getBoundingRectangle().y, 80));
+				soundManager.playClip("explosion", false);
+				alienProjectiles.remove(p);
+				ship2.setDead(true);
 			}
 		}
 
