@@ -195,16 +195,25 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	}
 
 	public void gameUpdate() {
-		for (Alien alien : aliens) {
-			alien.move();
-		}
-
 		// update game clock
 		long now = System.currentTimeMillis();
 		long delta = now - lastUpdateTime;
 		gameTime += delta;
 		lastUpdateTime = now;
-
+		
+		if(aliens != null){
+			for (Alien alien : aliens) {
+				alien.move();
+				
+				// alien firing logic: every 2 seconds
+				if (gameTime - alien.getLastShootTime() >= 2000) {
+					alien.fire();
+					alien.setLastShootTime(gameTime);
+				}
+			}
+		}
+		
+		
 		// countdown timer for level 1
 		if (level == 1) {
 			levelTimer -= delta;
@@ -285,7 +294,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				}
 			}
 			lastAlienSpawnTime = gameTime;
-		}
+		}		
 
 		// asteroid spawn logic: every 5 seconds
 		if (gameTime - lastAsteroidSpawnTime >= 5000) {

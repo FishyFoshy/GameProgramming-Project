@@ -13,8 +13,9 @@ public class SineProjectile implements Projectile {
     private double amplitudeFactor;
     private double frequencyFactor;
     private int yAxis;
+    private Color colour;
 
-    public SineProjectile(int startX, int startY, boolean isShip) {
+    public SineProjectile(int startX, int startY, boolean isShip, int colour) {
         this.x = startX;
         this.y = startY;
         this.yAxis = startX;
@@ -24,6 +25,13 @@ public class SineProjectile implements Projectile {
         this.isShip = isShip;
         amplitudeFactor = 75;
         frequencyFactor = 1;
+
+        if(colour == 0)
+            this.colour = Color.GREEN;
+        else if(colour == 1)
+            this.colour = Color.CYAN;
+        else if(colour == 2)
+            this.colour = Color.YELLOW;
     }
 
     public void update() {
@@ -52,7 +60,7 @@ public class SineProjectile implements Projectile {
         if (isShip) {
             g2.setColor(Color.YELLOW);
         } else {
-            g2.setColor(Color.RED);
+            g2.setColor(colour);
         }
         g2.fillRect(x, y, size, size);
     }

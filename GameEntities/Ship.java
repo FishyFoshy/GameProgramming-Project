@@ -82,7 +82,7 @@ public class Ship {
       if (firing && now - lastFireTime >= FIRE_COOLDOWN) {
          int bulletX = x + width / 2 - 4;
          int bulletY = y;
-         projectiles.add(new StraightProjectile(bulletX, bulletY, true, damage));
+         projectiles.add(new StraightProjectile(bulletX, bulletY, true, damage, 0));
          lastFireTime = now;
       }
    }

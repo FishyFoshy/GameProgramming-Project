@@ -10,8 +10,9 @@ public class StraightProjectile implements Projectile {
     private boolean active;
     private boolean isShip;
     private int damage;
+    private Color colour;
 
-    public StraightProjectile(int startX, int startY, boolean isShip, int damage) {
+    public StraightProjectile(int startX, int startY, boolean isShip, int damage, int colour) {
         this.x = startX;
         this.y = startY;
         this.size = 8;
@@ -19,6 +20,13 @@ public class StraightProjectile implements Projectile {
         this.active = true;
         this.isShip = isShip;
         this.damage = damage;
+
+        if(colour == 0)
+            this.colour = Color.GREEN;
+        else if(colour == 1)
+            this.colour = Color.CYAN;
+        else if(colour == 2)
+            this.colour = Color.YELLOW;
     }
 
     public int getDamage() {
@@ -44,9 +52,9 @@ public class StraightProjectile implements Projectile {
     public void draw(Graphics2D g2) {
         if (!active) return;
         if (isShip) {
-            g2.setColor(Color.YELLOW);
-        } else {
             g2.setColor(Color.RED);
+        } else {
+            g2.setColor(colour);
         }
         g2.fillRect(x, y, size, size);
     }

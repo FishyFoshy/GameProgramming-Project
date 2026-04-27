@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Alien {
@@ -18,6 +19,11 @@ public class Alien {
    private ImageFX effect;
    private final Random rand;
 
+   private boolean dead;
+
+   private ArrayList<Projectile> projectiles;
+   private long lastAlienShootTime;
+
 
    public Alien (int xPos, int yPos, ImageFX effect) {
       width = 50;
@@ -29,6 +35,9 @@ public class Alien {
       x = xPos;
       y = yPos;
       rand = new Random();
+      dead = true;
+      lastAlienShootTime = 0;
+      projectiles = new ArrayList<>();
 
       alienImage = ImageManager.loadBufferedImage("images/Alien.png");
    }
@@ -40,6 +49,10 @@ public class Alien {
 
       if(alienImage != null){
          g2.drawImage(drawnImage, x, y, width, height, null);
+      }
+
+      for (Projectile p : projectiles) {
+         p.draw(g2);
       }
    }
 
@@ -56,20 +69,49 @@ public class Alien {
       if(y > 100){
          y = 100;
       }
+
+      updateProjectile();
+   }
+
+   public void updateProjectile(){
+      for (int i = 0; i < projectiles.size(); i++) {
+         projectiles.get(i).update();
+         if (!projectiles.get(i).isActive()) {
+            projectiles.remove(i);
+         }
+      }
    }
 
    public Rectangle2D.Double getBoundingRectangle() {
       return new Rectangle2D.Double (x, y, width, height);
    }
 
+   public void fire() {
+         int bulletX = x + width / 2 - 4;
+         int bulletY = y + 50;
+         if(effect == null)
+            projectiles.add(new StraightProjectile(bulletX, bulletY, false, 1, 0));
+         else if(effect.getEffectName() == "blue")
+            projectiles.add(new SineProjectile(bulletX, bulletY, false, 1));
+         else if(effect.getEffectName() == "red")
+            projectiles.add(new CircularProjectile(bulletX, bulletY, false, 2));
+   }
+
+   public boolean isDead() { return dead; }
+   public void setDead(boolean d) { dead = d; }
+
    public void setEffect(ImageFX newFx) { effect = newFx; }
    public int getX() { return x; }
 	public int getY() { return y; }
 	public int getWidth() { return width; }
 	public int getHeight() { return height; }
+   public long getLastShootTime() { return lastAlienShootTime; }
    public ImageFX getEffect() { 
       if(effect != null)
          return effect;
       return null;
+   }
+   public void setLastShootTime(long gameTime) {
+      lastAlienShootTime = gameTime;
    }
 }
