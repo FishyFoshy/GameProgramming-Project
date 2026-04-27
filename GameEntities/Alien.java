@@ -22,6 +22,7 @@ public class Alien {
    private boolean dead;
 
    private ArrayList<Projectile> projectiles;
+   private long lastAlienShootTime;
 
 
    public Alien (int xPos, int yPos, ImageFX effect) {
@@ -35,6 +36,8 @@ public class Alien {
       y = yPos;
       rand = new Random();
       dead = true;
+      lastAlienShootTime = 0;
+      projectiles = new ArrayList<>();
 
       alienImage = ImageManager.loadBufferedImage("images/Alien.png");
    }
@@ -66,6 +69,17 @@ public class Alien {
       if(y > 100){
          y = 100;
       }
+
+      updateProjectile();
+   }
+
+   public void updateProjectile(){
+      for (int i = 0; i < projectiles.size(); i++) {
+         projectiles.get(i).update();
+         if (!projectiles.get(i).isActive()) {
+            projectiles.remove(i);
+         }
+      }
    }
 
    public Rectangle2D.Double getBoundingRectangle() {
@@ -83,10 +97,6 @@ public class Alien {
             projectiles.add(new CircularProjectile(bulletX, bulletY, false, 2));
    }
 
-   public ArrayList<Projectile> getProjectiles() {
-      return projectiles;
-   }
-
    public boolean isDead() { return dead; }
    public void setDead(boolean d) { dead = d; }
 
@@ -95,9 +105,13 @@ public class Alien {
 	public int getY() { return y; }
 	public int getWidth() { return width; }
 	public int getHeight() { return height; }
+   public long getLastShootTime() { return lastAlienShootTime; }
    public ImageFX getEffect() { 
       if(effect != null)
          return effect;
       return null;
+   }
+   public void setLastShootTime(long gameTime) {
+      lastAlienShootTime = gameTime;
    }
 }

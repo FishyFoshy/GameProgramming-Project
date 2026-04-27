@@ -60,7 +60,7 @@ public class SineProjectile implements Projectile {
         if (isShip) {
             g2.setColor(Color.YELLOW);
         } else {
-            g2.setColor(Color.RED);
+            g2.setColor(colour);
         }
         g2.fillRect(x, y, size, size);
     }
