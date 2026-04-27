@@ -63,6 +63,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private final PauseScreen pauseScreen;
 	private final GameOverScreen gameOverScreen;
 	public static int score = 0;
+	public static int highScore = 0;
 
 
 	public GamePanel (GameWindow gW) {
@@ -342,9 +343,31 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			}
 		}
 
+		// check alien projectile-ship collisions
+		for (Alien alien : aliens) {
+			for (int p = alien.getProjectiles().size() - 1; p >= 0; p--) {
+				Projectile proj = alien.getProjectiles().get(p);
+				if (!proj.isActive()) continue;
+				if (!ship.isDead() && proj.getBoundingRectangle().intersects(ship.getBoundingRectangle())) {
+					explosions.add(new Explosion((int)ship.getBoundingRectangle().x, (int)ship.getBoundingRectangle().y, 80));
+					soundManager.playClip("explosion", false);
+					alien.getProjectiles().remove(p);
+					ship.setDead(true);
+					continue;
+				}
+				if (ship2 != null && !ship2.isDead() && proj.getBoundingRectangle().intersects(ship2.getBoundingRectangle())) {
+					explosions.add(new Explosion((int)ship2.getBoundingRectangle().x, (int)ship2.getBoundingRectangle().y, 80));
+					soundManager.playClip("explosion", false);
+					alien.getProjectiles().remove(p);
+					ship2.setDead(true);
+				}
+			}
+		}
+
 		// trigger game over when all ships are dead
 		boolean allDead = ship.isDead() && (ship2 == null || ship2.isDead());
 		if (allDead && !gameOver && explosions.isEmpty()) {
+			if (score > highScore) highScore = score;
 			gameOver = true;
 			soundManager.stopAll();
 			soundManager.playClip("game-over", false);
@@ -550,7 +573,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 		// draw game over screen
 		if (gameOver) {
-			gameOverScreen.draw(imageContext, score);
+			gameOverScreen.draw(imageContext, score, highScore);
 		}
 
 		if (bossDefeated) {
