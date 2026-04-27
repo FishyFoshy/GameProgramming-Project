@@ -21,7 +21,6 @@ public class Alien {
 
    private boolean dead;
 
-   private ArrayList<Projectile> projectiles;
    private long lastAlienShootTime;
 
 
@@ -37,7 +36,6 @@ public class Alien {
       rand = new Random();
       dead = true;
       lastAlienShootTime = 0;
-      projectiles = new ArrayList<>();
 
       alienImage = ImageManager.loadBufferedImage("images/Alien.png");
    }
@@ -49,10 +47,6 @@ public class Alien {
 
       if(alienImage != null){
          g2.drawImage(drawnImage, x, y, width, height, null);
-      }
-
-      for (Projectile p : projectiles) {
-         p.draw(g2);
       }
    }
 
@@ -69,24 +63,13 @@ public class Alien {
       if(y > 100){
          y = 100;
       }
-
-      updateProjectile();
-   }
-
-   public void updateProjectile(){
-      for (int i = 0; i < projectiles.size(); i++) {
-         projectiles.get(i).update();
-         if (!projectiles.get(i).isActive()) {
-            projectiles.remove(i);
-         }
-      }
    }
 
    public Rectangle2D.Double getBoundingRectangle() {
       return new Rectangle2D.Double (x, y, width, height);
    }
 
-   public void fire() {
+   public ArrayList<Projectile> fire(ArrayList<Projectile> projectiles) {
          int bulletX = x + width / 2 - 4;
          int bulletY = y + 50;
          if(effect == null)
@@ -95,6 +78,8 @@ public class Alien {
             projectiles.add(new SineProjectile(bulletX, bulletY, false, 1));
          else if(effect.getEffectName() == "red")
             projectiles.add(new CircularProjectile(bulletX, bulletY, false, 2));
+
+         return projectiles;
    }
 
    public boolean isDead() { return dead; }
@@ -113,5 +98,10 @@ public class Alien {
    }
    public void setLastShootTime(long gameTime) {
       lastAlienShootTime = gameTime;
+   }
+   public String getEffectColour(){
+      if (effect != null)
+         return effect.getEffectName();
+      return "none";
    }
 }
