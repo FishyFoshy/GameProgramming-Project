@@ -10,7 +10,6 @@ public class TintFX implements ImageFX {
 		tint = 255;
 	}
 
-
 	private int truncate (int colourValue) {	// keeps colourValue within [0..255] range
 		if (colourValue > 255)
 			return 255;
@@ -21,9 +20,7 @@ public class TintFX implements ImageFX {
 		return colourValue;
 	}
 
-
 	private int applyTint (int pixel) {
-
     	int alpha, red, green, blue;
 		int newPixel;
 		
@@ -32,16 +29,14 @@ public class TintFX implements ImageFX {
 		green = (pixel >> 8) & 255;
 		blue = pixel & 255;
 
-		if(color == "red"){
+		if("red".equals(color))
 			red = truncate (red + tint);
-		}
-		else if(color == "blue")
+		else if("blue".equals(color))
 			blue = truncate (blue + tint);
-		else if(color == "green")
+		else if("green".equals(color))
 			green = truncate (green + tint);
 		
 		newPixel = blue | (green << 8) | (red << 16) | (alpha << 24);
-
 		return newPixel;
 	}
 
@@ -62,9 +57,7 @@ public class TintFX implements ImageFX {
 		return copyImage;
 	}
 
-	public void update() {
-	}
+	public void update() {}
 
-	public String getEffectName(){return "Tint";}
-	public String getColor(){return color;}
+	public String getEffectName(){return color;}
 }
