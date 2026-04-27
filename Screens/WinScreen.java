@@ -3,7 +3,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 
-public class GameOverScreen {
+public class WinScreen {
 
     private int panelWidth, panelHeight;
     private int buttonWidth = 200;
@@ -11,7 +11,7 @@ public class GameOverScreen {
     private int buttonX;
     private int restartButtonY, exitButtonY;
 
-    public GameOverScreen(int width, int height) {
+    public WinScreen(int width, int height) {
         panelWidth = width;
         panelHeight = height;
         buttonX = (width - buttonWidth) / 2;
@@ -20,13 +20,13 @@ public class GameOverScreen {
     }
 
     public void draw(Graphics2D g, int score, int highScore) {
-        g.setColor(new Color(0, 0, 0, 200));
+        g.setColor(new Color(0, 0, 0, 180));
         g.fillRect(0, 0, panelWidth, panelHeight);
 
-        // game over title
-        g.setColor(Color.RED);
-        g.setFont(new Font("Arial", Font.BOLD, 50));
-        String title = "GAME OVER";
+        // title
+        g.setColor(new Color(255, 215, 0)); // gold
+        g.setFont(new Font("Arial", Font.BOLD, 60));
+        String title = "YOU WIN!";
         int tw = g.getFontMetrics().stringWidth(title);
         g.drawString(title, (panelWidth - tw) / 2, panelHeight / 2 - 120);
 
@@ -37,8 +37,7 @@ public class GameOverScreen {
         int hw = g.getFontMetrics().stringWidth(hsText);
         g.drawString(hsText, (panelWidth - hw) / 2, panelHeight / 2 - 60);
 
-        // total score
-        
+        // current score
         String scoreText = "Score: " + score;
         int sw = g.getFontMetrics().stringWidth(scoreText);
         g.drawString(scoreText, (panelWidth - sw) / 2, panelHeight / 2 - 20);
@@ -46,11 +45,11 @@ public class GameOverScreen {
         Color green = new Color(0, 150, 0, 150);
         g.setFont(new Font("Arial", Font.BOLD, 22));
 
-        // start over button
+        // play again button
         g.setColor(green);
         g.fillRoundRect(buttonX, restartButtonY, buttonWidth, buttonHeight, 20, 20);
         g.setColor(Color.WHITE);
-        g.drawString("Start Over", buttonX + 42, restartButtonY + 33);
+        g.drawString("Play Again", buttonX + 43, restartButtonY + 33);
 
         // exit button
         g.setColor(green);
