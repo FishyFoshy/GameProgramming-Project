@@ -105,6 +105,7 @@ public class Alien {
 	public int getY() { return y; }
 	public int getWidth() { return width; }
 	public int getHeight() { return height; }
+   public ArrayList<Projectile> getProjectiles() { return projectiles; }
    public long getLastShootTime() { return lastAlienShootTime; }
    public ImageFX getEffect() { 
       if(effect != null)

@@ -19,7 +19,7 @@ public class GameOverScreen {
         exitButtonY = height / 2 + 90;
     }
 
-    public void draw(Graphics2D g, int score) {
+    public void draw(Graphics2D g, int score, int highScore) {
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, panelWidth, panelHeight);
 
@@ -30,11 +30,16 @@ public class GameOverScreen {
         int tw = g.getFontMetrics().stringWidth(title);
         g.drawString(title, (panelWidth - tw) / 2, panelHeight / 2 - 120);
 
+        // high score
+        String hsText = "High Score: " + highScore;
+        int hw = g.getFontMetrics().stringWidth(hsText);
+        g.drawString(hsText, (panelWidth - hw) / 2, panelHeight / 2 - 60);
+
         // total score
         g.setFont(new Font("Arial", Font.BOLD, 28));
         String scoreText = "Score: " + score;
         int sw = g.getFontMetrics().stringWidth(scoreText);
-        g.drawString(scoreText, (panelWidth - sw) / 2, panelHeight / 2 - 60);
+        g.drawString(scoreText, (panelWidth - sw) / 2, panelHeight / 2 - 20);
 
         Color green = new Color(0, 150, 0, 150);
         g.setFont(new Font("Arial", Font.BOLD, 22));
