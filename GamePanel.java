@@ -65,6 +65,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public static int score = 0;
 	public static int highScore = 0;
 
+	public ArrayList<Projectile> alienProjectiles;
 
 	public GamePanel (GameWindow gW) {
 		gameWindow = gW;
@@ -117,6 +118,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	public void createGameEntities() {
 		aliens = new ArrayList<>();
+		alienProjectiles = new ArrayList<>();
 		backgroundImage = new BackgroundManager(); 
 		asteroids = new ArrayList<>();
 		items = new ArrayList<>();
@@ -202,18 +204,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		gameTime += delta;
 		lastUpdateTime = now;
 		
-		if(aliens != null){
-			for (Alien alien : aliens) {
-				alien.move();
-				
-				// alien firing logic: every 2 seconds
-				if (gameTime - alien.getLastShootTime() >= 2000) {
-					alien.fire();
-					alien.setLastShootTime(gameTime);
-				}
+		for (Alien alien : aliens) {
+			alien.move();
+			
+			// alien firing logic: every 2 seconds
+			if (gameTime - alien.getLastShootTime() >= 2000) {
+				alienProjectiles = alien.fire(alienProjectiles);
+				alien.setLastShootTime(gameTime);
 			}
 		}
 		
+		updateProjectiles();
 		
 		// countdown timer for level 1
 		if (level == 1) {
@@ -482,6 +483,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		}
 	}
 
+	public void updateProjectiles(){
+		for (int i = 0; i < alienProjectiles.size(); i++) {
+			alienProjectiles.get(i).update();
+			if (!alienProjectiles.get(i).isActive()) {
+				alienProjectiles.remove(i);
+			}
+		}
+	}
+
 	public void updateShip (int direction) {
 		if (backgroundImage != null && !isPaused && !bossDefeated) {
 			ship.setMoveDirection(direction);
@@ -500,6 +510,11 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				alien.draw(imageContext);
 			}
 		}
+
+		if(alienProjectiles != null)
+			for (Projectile projectile : alienProjectiles) {
+				projectile.draw(imageContext);
+			}
 
 		if (boss != null) {
 			boss.draw(imageContext);
