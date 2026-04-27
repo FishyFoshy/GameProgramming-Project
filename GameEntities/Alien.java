@@ -1,24 +1,22 @@
 package GameEntities;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-
-import javax.swing.JPanel;
-
 import ImageManip.ImageFX;
 import ImageManip.ImageManager;
-
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class Alien {
    private int x;
-   private int y, dy;
+   private int y, dy, dx;
    
    private int width;
    private int height;
 
    private Image alienImage;
    private ImageFX effect;
+   private final Random rand;
 
 
    public Alien (int xPos, int yPos, ImageFX effect) {
@@ -27,8 +25,10 @@ public class Alien {
 
       this.effect = effect;
       dy = 2;
+      dx = 0;
       x = xPos;
       y = yPos;
+      rand = new Random();
 
       alienImage = ImageManager.loadBufferedImage("images/Alien.png");
    }
@@ -44,6 +44,14 @@ public class Alien {
    }
 
    public void move(){
+      // 5% chance per frame to change horizontal direction
+      if (rand.nextInt(100) < 5) {
+         dx = rand.nextInt(5) - 2;
+      }
+      x += dx;
+      if (x < 0) { x = 0; dx = 0; }
+      if (x > 550) { x = 550; dx = 0; }
+
       y += dy;
       if(y > 100){
          y = 100;
