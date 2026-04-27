@@ -84,7 +84,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		ship2 = null;
 		twoPlayer = false;
 		level = 1;
-		asteroidChance = 100;
+		asteroidChance = 30;
 		alienChance = 50;
 		straightAlien = 10;
 		sineAlien = 5;
