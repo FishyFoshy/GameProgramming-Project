@@ -234,8 +234,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			bossSpawnedOnce = true;
 		}
 
+		// Boss updates
 		if (boss != null) {
 			boss.update();
+
+			if (gameTime - boss.getLastShootTime() >= 2000 && boss.isHealthBarFull()) {
+				alienProjectiles = boss.fire(alienProjectiles);
+				boss.setLastShootTime(gameTime);
+			}
 			// if boss just died, spawn multiple explosions over its sprite and remove it
 			if (!boss.isAlive()) {
 				int explCount = 10;
