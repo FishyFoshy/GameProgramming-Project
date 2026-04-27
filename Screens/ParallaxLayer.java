@@ -1,6 +1,5 @@
 package Screens;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 
 public class ParallaxLayer {
@@ -32,10 +31,4 @@ public class ParallaxLayer {
       g2.drawImage(image, 0, y, null);
 
    }
-
-   public void setY(int newY){ y = newY;}
-   public int getWidth(){ return width;}
-   public int getHeight(){ return height;}
-   public int getY(){ return y;}
-   public Image getImage(){ return image;}
 }

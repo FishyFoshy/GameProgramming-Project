@@ -99,10 +99,6 @@ public class Animation {
         }
     }
 
-    public int getNumFrames() {
-	    return frames.size();
-    }
-
     private AnimFrame getFrame(int i) {
         return frames.get(i);
     }

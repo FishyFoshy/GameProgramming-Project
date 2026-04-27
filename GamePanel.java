@@ -30,6 +30,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private boolean isRunning;
 	private boolean isPaused;
 
+
 	private Thread gameThread;
 
 	private BufferedImage image;
@@ -42,8 +43,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private ImageFX redTintFx;
 	private boolean gameOver;
 	private boolean bossDefeated;
-	private int collected, fps, frames;
-	private long lastFrameTime;
 	private long lastAsteroidSpawnTime, lastAlienSpawnTime;
 	private long gameTime;
 	private long lastUpdateTime;
@@ -71,7 +70,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public GamePanel (GameWindow gW) {
 		gameWindow = gW;
 		bossSpawnedOnce = false;
-		collected = 0;
 		blueTintFx = new TintFX("blue");
 		redTintFx = new TintFX("red");
 		bossDefeated = false;
@@ -130,9 +128,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		lastUpdateTime = System.currentTimeMillis();
 		boss = null;
 		bossSpawnedOnce = false;
-		ship = new Ship(this, 210, 715, aliens, false);
+		ship = new Ship(this, 210, 715, false);
 		if (twoPlayer) {
-			ship2 = new Ship(this, 310, 715, aliens, true);
+			ship2 = new Ship(this, 310, 715, true);
 		}
 		bossDefeated = false;
 	}
@@ -615,14 +613,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		g2.drawImage(image, 0, 0, 600, 800, null);
 		imageContext.dispose();
 		g2.dispose();
-
-		frames++;
-		long currentTime = System.currentTimeMillis();
-		if(currentTime - lastFrameTime >= 1000){
-			fps = frames;
-			frames = 0;
-			lastFrameTime = currentTime;
-		}
 	}
 
 	public void startGame() {
@@ -695,8 +685,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		soundManager.stopAll();
 		soundManager.playClip("mainmenu", true);
 	}
-
-	public void gameOver() {}
 
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();

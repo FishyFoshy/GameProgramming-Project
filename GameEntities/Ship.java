@@ -1,6 +1,4 @@
 package GameEntities;
-import ImageManip.GrayScaleFX;
-import ImageManip.ImageFX;
 import Misc.Animation;
 import Misc.SoundManager;
 import java.awt.Dimension;
@@ -29,22 +27,17 @@ public class Ship {
    private SoundManager soundManager;
    private Animation movementAnimation, rightAnimation, leftAnimation, nextAnimation, idleAnimation;
 
-   private ArrayList<Alien> aliens;
    private ArrayList<Projectile> projectiles;
-   private ImageFX gray;
 
-   public Ship (JPanel p, int xPos, int yPos, ArrayList<Alien> a, boolean isP2) {
+   public Ship (JPanel p, int xPos, int yPos, boolean isP2) {
       panel = p;
       dimension = panel.getSize();
 
       this.isP2 = isP2;
 
-      gray = new GrayScaleFX();
-
       width = 80;
       height = 65;
 
-      aliens = a;
       projectiles = new ArrayList<>();
 
       x = xPos;
@@ -132,7 +125,6 @@ public class Ship {
          if (x + width > dimension.width+15)
             x = dimension.width - width+15;
       }
-      collidesWithAlien();
    }
    
 	public void update() {
@@ -172,14 +164,5 @@ public class Ship {
    
    public void increaseDamage(int amount) {
       damage += amount;
-   }
-
-   public int getDamage() {
-      return damage;
-   }
-
-   public void collidesWithAlien(){
-      for(Alien alien : aliens){
-      }
    }
 }

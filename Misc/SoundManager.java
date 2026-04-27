@@ -13,8 +13,6 @@ public class SoundManager {
 
 	private static SoundManager instance = null;	
 
-	private float volume;
-
 	private SoundManager () {
 
 		Clip clip;
@@ -53,8 +51,6 @@ public class SoundManager {
 
 		clip = loadClip("sounds/winning.wav");
 		clips.put("winning", clip);
-
-		volume = 1.0f;
 	}
 
 
@@ -139,10 +135,6 @@ public class SoundManager {
 				clip.start();
 			}
 		}
-	}
-
-	public boolean isPaused() {
-		return isPaused;
 	}
 
 	public void stopAll() {
