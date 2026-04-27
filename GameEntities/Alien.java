@@ -10,16 +10,15 @@ import java.util.Random;
 
 public class Alien {
    private int x;
-   private int y, dy, dx;
+   private final int dy;
+   private int y, dx;
    
-   private int width;
-   private int height;
+   private final int width;
+   private final int height;
 
-   private Image alienImage;
+   private final Image alienImage;
    private ImageFX effect;
    private final Random rand;
-
-   private boolean dead;
 
    private long lastAlienShootTime;
 
@@ -34,7 +33,6 @@ public class Alien {
       x = xPos;
       y = yPos;
       rand = new Random();
-      dead = true;
       lastAlienShootTime = 0;
 
       alienImage = ImageManager.loadBufferedImage("images/Alien.png");
@@ -74,16 +72,13 @@ public class Alien {
          int bulletY = y + 50;
          if(effect == null)
             projectiles.add(new StraightProjectile(bulletX, bulletY, false, 1, 0));
-         else if(effect.getEffectName() == "blue")
+         else if("blue".equals(effect.getEffectName()))
             projectiles.add(new SineProjectile(bulletX, bulletY, false, 1));
-         else if(effect.getEffectName() == "red")
+         else if("red".equals(effect.getEffectName()))
             projectiles.add(new CircularProjectile(bulletX, bulletY, false, 2));
 
          return projectiles;
    }
-
-   public boolean isDead() { return dead; }
-   public void setDead(boolean d) { dead = d; }
 
    public void setEffect(ImageFX newFx) { effect = newFx; }
    public int getX() { return x; }
@@ -98,10 +93,5 @@ public class Alien {
    public long getLastShootTime() { return lastAlienShootTime; }
    public void setLastShootTime(long gameTime) {
       lastAlienShootTime = gameTime;
-   }
-   public String getEffectColour(){
-      if (effect != null)
-         return effect.getEffectName();
-      return "none";
    }
 }

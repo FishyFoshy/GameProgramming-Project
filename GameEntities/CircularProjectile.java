@@ -80,8 +80,4 @@ public class CircularProjectile implements Projectile {
     public boolean isShip() {
         return isShip;
     }
-
-    public void deactivate() {
-        active = false;
-    }
 }

@@ -1,13 +1,11 @@
 import java.awt.*;			// need this for GUI objects
-import java.awt.event.*;			// need this for Layout Managers
 import javax.swing.*;		// need this to respond to GUI events
 	
-public class GameWindow extends JFrame implements ActionListener, KeyListener, MouseListener
+public class GameWindow extends JFrame
 {
 	private final Container c;
 	private final GamePanel gamePanel;
 
-	@SuppressWarnings({})
 	public GameWindow() {
  
 		setTitle ("Spacewar");
@@ -31,23 +29,4 @@ public class GameWindow extends JFrame implements ActionListener, KeyListener, M
 		gamePanel.requestFocus();
 		gamePanel.startThread();
 	}
-
-    @Override
-	public void actionPerformed(ActionEvent e) {}
-	@Override
-	public void keyPressed(KeyEvent e) {}
-	@Override
-	public void keyReleased(KeyEvent e) {}
-	@Override
-	public void keyTyped(KeyEvent e) {}
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-	@Override
-	public void mouseExited(MouseEvent e) {}
-	@Override
-	public void mousePressed(MouseEvent e) {}
-	@Override
-	public void mouseReleased(MouseEvent e) {}
 }

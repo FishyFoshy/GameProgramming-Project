@@ -1,15 +1,13 @@
 package ImageManip;
-import javax.swing.ImageIcon;
-import java.awt.Image;
 import java.awt.Graphics2D;
-import javax.imageio.ImageIO;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public class ImageManager {
-   	public ImageManager () {
-	}
 
 	public static Image loadImage (String fileName) {
 		return new ImageIcon(fileName).getImage();

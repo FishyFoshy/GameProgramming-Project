@@ -110,10 +110,6 @@ public class StartScreen {
 		g.drawString("X", xButtonX + 7, xButtonY + 23);
 	}
 
-	public boolean isShowingInstructions() {
-		return showingInstructions;
-	}
-
 	public void setShowingInstructions(boolean b) {
 		showingInstructions = b;
 	}

@@ -2,7 +2,7 @@ package ImageManip;
 import java.awt.image.BufferedImage;
 
 public class TintFX implements ImageFX {
-	int tint, tintChange;		// to alter the brightness of the image
+	int tint;		// to alter the brightness of the image
 	String color;
 
 	public TintFX (String color) {
