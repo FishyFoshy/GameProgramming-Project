@@ -83,7 +83,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		twoPlayer = false;
 		level = 1;
 		asteroidChance = 30;
-		alienChance = 50;
+		alienChance = 75;
 		straightAlien = 10;
 		sineAlien = 5;
 		circularAlien = 2;
@@ -240,12 +240,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		if (boss != null) {
 			boss.update();
 
-			if (gameTime - boss.getLastShootTime() >= 2000 && boss.isHealthBarFull()) {
+			if (gameTime - boss.getLastShootTime() >= 1000 && boss.isHealthBarFull()) {
 				alienProjectiles = boss.fire(alienProjectiles);
 				boss.setLastShootTime(gameTime);
 			}
 			// if boss just died, spawn multiple explosions over its sprite and remove it
 			if (!boss.isAlive()) {
+				alienProjectiles.clear();
 				int explCount = 10;
 				for (int i = 0; i < explCount; i++) {
 					int size = random.nextInt(40, 121);
@@ -301,7 +302,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				else if(roll < sineAlien){
 					aliens.add(new Alien(spawnX, 0, blueTintFx));
 				}
-				else if(roll < straightAlien){
+				else if(roll <= straightAlien){
 					aliens.add(new Alien(spawnX, 0, null));
 				}
 			}
@@ -379,6 +380,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			}
 		}
 
+		if(ship.isDead())
+			ship.getProjectiles().clear();
+		if(ship2 != null && ship2.isDead())
+			ship2.getProjectiles().clear();
+
+			
 		// trigger game over when all ships are dead
 		boolean allDead = ship.isDead() && (ship2 == null || ship2.isDead());
 		if (allDead && !gameOver && explosions.isEmpty()) {

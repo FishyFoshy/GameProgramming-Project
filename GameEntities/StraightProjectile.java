@@ -27,6 +27,10 @@ public class StraightProjectile implements Projectile {
             this.colour = Color.CYAN;
         else if(colour == 2)
             this.colour = Color.YELLOW;
+        else if(colour == 3)
+            this.colour = Color.MAGENTA;
+        else if(colour == 4)
+            this.colour = Color.ORANGE;
     }
 
     public int getDamage() {
@@ -52,15 +56,20 @@ public class StraightProjectile implements Projectile {
     public void draw(Graphics2D g2) {
         if (!active) return;
         if (isShip) {
-            g2.setColor(Color.RED);
+            g2.setColor(colour);
         } else {
             g2.setColor(colour);
         }
         g2.fillRect(x, y, size, size);
+
+        g2.setColor(Color.BLACK);
+        g2.drawRect(x, y, size, size);
     }
 
     public Rectangle2D.Double getBoundingRectangle() {
-        return new Rectangle2D.Double(x, y, size, size);
+        if(isActive())
+            return new Rectangle2D.Double(x, y, size, size);
+        return new Rectangle2D.Double(0,0,0,0);
     }
 
     public boolean isActive() {

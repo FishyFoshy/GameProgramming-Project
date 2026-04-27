@@ -3,7 +3,9 @@ import Misc.Animation;
 import Misc.SoundManager;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
+import java.nio.ReadOnlyBufferException;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 
@@ -28,12 +30,18 @@ public class Ship {
    private Animation movementAnimation, rightAnimation, leftAnimation, nextAnimation, idleAnimation;
 
    private ArrayList<Projectile> projectiles;
+   private int color;
 
    public Ship (JPanel p, int xPos, int yPos, boolean isP2) {
       panel = p;
       dimension = panel.getSize();
 
       this.isP2 = isP2;
+
+      color = 3;
+      
+      if(isP2)
+         color = 4;
 
       width = 80;
       height = 65;
@@ -75,7 +83,7 @@ public class Ship {
       if (firing && now - lastFireTime >= FIRE_COOLDOWN) {
          int bulletX = x + width / 2 - 4;
          int bulletY = y;
-         projectiles.add(new StraightProjectile(bulletX, bulletY, true, damage, 0));
+         projectiles.add(new StraightProjectile(bulletX, bulletY, true, damage, color));
          lastFireTime = now;
       }
    }
@@ -159,7 +167,9 @@ public class Ship {
 	}
 
    public Rectangle2D.Double getBoundingRectangle() {
-      return new Rectangle2D.Double (x+15, y, width-30, height);
+      if(!isDead())
+         return new Rectangle2D.Double (x+15, y, width-30, height);
+      return new Rectangle2D.Double(0,0,0,0);
    }
    
    public void increaseDamage(int amount) {
