@@ -12,7 +12,9 @@ public class CircularProjectile implements Projectile {
 
     private int centreY, centreX, radius, degree;
 
-    public CircularProjectile(int startX, int startY, boolean isShip) {
+    private Color colour;
+
+    public CircularProjectile(int startX, int startY, boolean isShip, int colour) {
         this.x = startX;
         this.y = startY;
         this.centreX = startX;
@@ -23,6 +25,13 @@ public class CircularProjectile implements Projectile {
         this.isShip = isShip;
         radius = 75;
         degree = 75;
+
+        if(colour == 0)
+            this.colour = Color.GREEN;
+        else if(colour == 1)
+            this.colour = Color.CYAN;
+        else if(colour == 2)
+            this.colour = Color.YELLOW;
     }
 
     public void update() {

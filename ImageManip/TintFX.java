@@ -65,6 +65,5 @@ public class TintFX implements ImageFX {
 	public void update() {
 	}
 
-	public String getEffectName(){return "Tint";}
-	public String getColor(){return color;}
+	public String getEffectName(){return color;}
 }
