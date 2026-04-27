@@ -380,6 +380,27 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private void checkProjectileCollisions(ArrayList<Projectile> projectiles) {
 		for (int p = projectiles.size() - 1; p >= 0; p--) {
 			Projectile proj = projectiles.get(p);
+			// check collisions with aliens
+			for (int a = aliens.size() - 1; a >= 0; a--) {
+				Alien al = aliens.get(a);
+				if (proj.isShip() && al.getBoundingRectangle().intersects(proj.getBoundingRectangle())) {
+					explosions.add(new Explosion(al.getX() - 25, al.getY() - 25, al.getWidth() + 50));
+					soundManager.playClip("explosion", false);
+					aliens.remove(a);
+					projectiles.remove(p);
+					ImageFX fx = al.getEffect();
+					if (fx == null) {
+						score += 100;
+					} else if (fx.getEffectName().equals("blue")) {
+						score += 150;
+					} else if (fx.getEffectName().equals("red")) {
+						score += 200;
+					}
+					break;
+				}
+			}
+
+			// check collisions with asteroids
 			for (int a = asteroids.size() - 1; a >= 0; a--) {
 				Asteroid ast = asteroids.get(a);
 				if (proj.isShip() && ast.isAlive() && ast.collidesWith(proj.getBoundingRectangle())) {
@@ -387,7 +408,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					soundManager.playClip("explosion", false);
 					ast.destroy();
 					projectiles.remove(p);
-					score += 10;
+					score += 50;
 					spawnItemDrop(ast.getX() + ast.getSize() / 2, ast.getY());
 					break;
 				}
