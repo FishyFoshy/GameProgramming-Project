@@ -28,9 +28,9 @@ public class StraightProjectile implements Projectile {
         else if(colour == 2)
             this.colour = Color.YELLOW;
         else if(colour == 3)
-            this.colour = Color.MAGENTA;
+            this.colour = new Color(228, 66, 243);
         else if(colour == 4)
-            this.colour = Color.ORANGE;
+            this.colour = Color.RED;
     }
 
     public int getDamage() {
