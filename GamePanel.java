@@ -62,6 +62,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	private final PauseScreen pauseScreen;
 	private final GameOverScreen gameOverScreen;
+	private final WinScreen winScreen;
 	public static int score = 0;
 	public static int highScore = 0;
 
@@ -104,6 +105,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 		pauseScreen = new PauseScreen(600, 800);
 		gameOverScreen = new GameOverScreen(600, 800);
+		winScreen = new WinScreen(600, 800);
 
 		setFocusable(true);
 		addKeyListener(this);
@@ -224,7 +226,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				level = 2;
 				level2StartTime = gameTime;
 				aliens.clear();
-				alienProjectiles.clear();
+				asteroids.clear();
+				if (alienProjectiles != null) alienProjectiles.clear();
 				soundManager.stopClip("bgm");
 				soundManager.playAfter("incoming-boss", "boss", true);
 			}
@@ -256,8 +259,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				soundManager.stopClip("boss");
 				soundManager.playClip("explosion", false);
 				score += 10000;
+				if (score > highScore) highScore = score;
 				boss = null;
 				bossDefeated = true;
+				asteroids.clear();
 				ship.setFiring(false);
 				ship.setMoveDirection(-1);
 				ship.setMoveDirection(-2);
@@ -305,23 +310,29 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 			lastAlienSpawnTime = gameTime;
 		}		
 
-		// asteroid spawn logic: every 5 seconds
-		if (gameTime - lastAsteroidSpawnTime >= 5000) {
-			int roll = random.nextInt(100);
-			if (roll < asteroidChance) {
-				int spawnX = random.nextInt(550);
-				asteroids.add(new Asteroid(spawnX, -50));
+		// asteroids only active in level 1, or in level 2 once boss is fully in and health bar is done
+		boolean asteroidsActive = !bossDefeated && (level == 1 || (boss != null && !boss.isSlidingIn() && boss.isHealthBarFull()));
+		if (asteroidsActive) {
+			// spawn every 5 seconds
+			if (gameTime - lastAsteroidSpawnTime >= 5000) {
+				int roll = random.nextInt(100);
+				if (roll < asteroidChance) {
+					int spawnX = random.nextInt(550);
+					asteroids.add(new Asteroid(spawnX, -50));
+				}
+				lastAsteroidSpawnTime = gameTime;
 			}
-			lastAsteroidSpawnTime = gameTime;
-		}
 
-		// update asteroids and remove dead/offscreen ones
-		for (int a = asteroids.size() - 1; a >= 0; a--) {
-			Asteroid ast = asteroids.get(a);
-			ast.update();
-			if (!ast.isAlive() || ast.isOffScreen(800)) {
-				asteroids.remove(a);
+			// update asteroids and remove dead/offscreen ones
+			for (int a = asteroids.size() - 1; a >= 0; a--) {
+				Asteroid ast = asteroids.get(a);
+				ast.update();
+				if (!ast.isAlive() || ast.isOffScreen(800)) {
+					asteroids.remove(a);
+				}
 			}
+		} else {
+			lastAsteroidSpawnTime = gameTime;
 		}
 
 		// check projectile-asteroid collisions
@@ -597,13 +608,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		}
 
 		if (bossDefeated) {
-			imageContext.setColor(new Color(0, 0, 0, 180));
-			imageContext.fillRect(0, 0, 600, 800);
-			imageContext.setColor(Color.WHITE);
-			imageContext.setFont(new Font("Arial", Font.BOLD, 60));
-			String winText = "You Win!";
-			int tw = imageContext.getFontMetrics().stringWidth(winText);
-			imageContext.drawString(winText, (600 - tw) / 2, 80);
+			winScreen.draw(imageContext, score, highScore);
 		}
 
 		Graphics2D g2 = (Graphics2D) getGraphics();
@@ -762,6 +767,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					selectPlayers(false);
 				} else if (clicked.equals("2players")) {
 					selectPlayers(true);
+				}
+			}
+		} else if (isRunning && bossDefeated) {
+			int mx = e.getX() * 600 / getWidth();
+			int my = e.getY() * 800 / getHeight();
+			String clicked = winScreen.getButtonClicked(mx, my);
+			if (clicked != null) {
+				if (clicked.equals("restart")) {
+					restartGame();
+				} else if (clicked.equals("exit")) {
+					System.exit(0);
 				}
 			}
 		} else if (isRunning && gameOver) {
