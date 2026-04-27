@@ -335,7 +335,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 		// trigger game over when all ships are dead
 		boolean allDead = ship.isDead() && (ship2 == null || ship2.isDead());
-		if (allDead && !gameOver) {
+		if (allDead && !gameOver && explosions.isEmpty()) {
 			gameOver = true;
 			soundManager.stopAll();
 			soundManager.playClip("game-over", false);
