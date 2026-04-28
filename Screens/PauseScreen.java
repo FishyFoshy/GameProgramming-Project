@@ -5,23 +5,24 @@ import java.awt.Graphics2D;
 
 public class PauseScreen {
 
-	private int panelWidth, panelHeight;
-	private int buttonWidth = 200;
-	private int buttonHeight = 50;
-	private int buttonX;
-	private int resumeButtonY, exitButtonY;
+	private final int panelWidth, panelHeight;
+	private final int buttonWidth = 200;
+	private final int buttonHeight = 50;
+	private final int buttonX;
+	private final int resumeButtonY, restartButtonY, exitButtonY;
 
 	// pause button in top left
-	private int pauseButtonX = 10;
-	private int pauseButtonY = 10;
-	private int pauseButtonSize = 40;
+	private final int pauseButtonX = 10;
+	private final int pauseButtonY = 10;
+	private final int pauseButtonSize = 40;
 
 	public PauseScreen(int width, int height) {
 		panelWidth = width;
 		panelHeight = height;
 		buttonX = (width - buttonWidth) / 2;
 		resumeButtonY = height / 2 - 60;
-		exitButtonY = height / 2 + 10;
+		restartButtonY = height / 2 + 10;
+		exitButtonY = height / 2 + 80;
 	}
 
 	public void drawPauseButton(Graphics2D g) {
@@ -58,6 +59,12 @@ public class PauseScreen {
 		g.setColor(Color.WHITE);
 		g.drawString("Resume", buttonX + 58, resumeButtonY + 33);
 
+		// restart button
+		g.setColor(green);
+		g.fillRoundRect(buttonX, restartButtonY, buttonWidth, buttonHeight, 20, 20);
+		g.setColor(Color.WHITE);
+		g.drawString("Restart", buttonX + 59, restartButtonY + 33);
+
 		// exit button
 		g.setColor(green);
 		g.fillRoundRect(buttonX, exitButtonY, buttonWidth, buttonHeight, 20, 20);
@@ -75,10 +82,12 @@ public class PauseScreen {
 			return null;
 		}
 
-		// check resume and exit buttons
+		// check resume, restart, and exit buttons
 		if (x >= buttonX && x <= buttonX + buttonWidth) {
 			if (y >= resumeButtonY && y <= resumeButtonY + buttonHeight)
 				return "resume";
+			if (y >= restartButtonY && y <= restartButtonY + buttonHeight)
+				return "restart";
 			if (y >= exitButtonY && y <= exitButtonY + buttonHeight)
 				return "exit";
 		}

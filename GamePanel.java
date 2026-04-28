@@ -33,14 +33,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 	private Thread gameThread;
 
-	private BufferedImage image;
+	private final BufferedImage image;
  	private BackgroundManager backgroundImage;
 	private Ship ship;
 	private Ship ship2;
 	private boolean twoPlayer;
 
-	private ImageFX blueTintFx;
-	private ImageFX redTintFx;
+	private final ImageFX blueTintFx;
+	private final ImageFX redTintFx;
 	private boolean gameOver;
 	private boolean bossDefeated;
 	private long lastAsteroidSpawnTime, lastAlienSpawnTime;
@@ -51,7 +51,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private static final long LEVEL1_DURATION = 180000; // 3 minutes in ms
 	private static final long CANTIME = 10000; // 10 seconds in ms
 	private final Random random;
-	private GameWindow gameWindow;
 
 	private final StartScreen startScreen;
 	private boolean showStartScreen;
@@ -68,7 +67,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	public ArrayList<Projectile> alienProjectiles;
 
 	public GamePanel (GameWindow gW) {
-		gameWindow = gW;
 		bossSpawnedOnce = false;
 		blueTintFx = new TintFX("blue");
 		redTintFx = new TintFX("red");
@@ -135,6 +133,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		bossDefeated = false;
 	}
 
+	@Override
 	public void run () {
 		long targetPeriod = 25;
 		try {
@@ -693,6 +692,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		soundManager.playClip("mainmenu", true);
 	}
 
+	@Override
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 
@@ -714,6 +714,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		}
 	}
 
+	@Override
 	public void keyReleased(KeyEvent e) {
 		int keyCode = e.getKeyCode();
 
@@ -733,10 +734,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		}
 	}
 
+	@Override
 	public void keyTyped(KeyEvent e) {}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 		if (showStartScreen) {
 			int mx = e.getX() * 600 / getWidth();
@@ -795,6 +799,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					pauseGame();
 				} else if (clicked.equals("resume")) {
 					pauseGame();
+				} else if (clicked.equals("restart")) {
+					restartGame();
 				} else if (clicked.equals("exit")) {
 					System.exit(0);
 				}
@@ -802,9 +808,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		}
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {}
 
+	@Override
 	public void mouseEntered(MouseEvent e) {}
 
+	@Override
 	public void mouseExited(MouseEvent e) {}
 }

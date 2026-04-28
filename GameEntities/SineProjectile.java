@@ -26,14 +26,22 @@ public class SineProjectile implements Projectile {
         amplitudeFactor = 75;
         frequencyFactor = 1;
 
-        if(colour == 0)
-            this.colour = Color.GREEN;
-        else if(colour == 1)
-            this.colour = Color.CYAN;
-        else if(colour == 2)
-            this.colour = Color.YELLOW;
+        switch (colour) {
+            case 0:
+                this.colour = Color.GREEN;
+                break;
+            case 1:
+                this.colour = Color.CYAN;
+                break;
+            case 2:
+                this.colour = Color.YELLOW;
+                break;
+            default:
+                break;
+        }
     }
 
+    @Override
     public void update() {
         if (active) {
             if (isShip) {
@@ -55,6 +63,7 @@ public class SineProjectile implements Projectile {
         }
     }
 
+    @Override
     public void draw(Graphics2D g2) {
         if (!active) return;
         if (isShip) {
@@ -68,16 +77,19 @@ public class SineProjectile implements Projectile {
         g2.drawRect(x, y, size, size);
     }
 
+    @Override
     public Rectangle2D.Double getBoundingRectangle() {
         if(isActive())
             return new Rectangle2D.Double(x, y, size, size);
         return new Rectangle2D.Double(0,0,0,0);
     }
 
+    @Override
     public boolean isActive() {
         return active;
     }
 
+    @Override
     public boolean isShip() {
         return isShip;
     }

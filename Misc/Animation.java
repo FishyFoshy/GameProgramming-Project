@@ -1,24 +1,23 @@
 package Misc;
+import ImageManip.ImageManager;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import ImageManip.ImageManager;
+public final class Animation {
 
-public class Animation {
-
-    private ArrayList<AnimFrame> frames;
+    private final ArrayList<AnimFrame> frames;
     private int currFrameIndex;
     private long animTime;
     private long startTime;
     private long totalDuration;
 
-    private boolean loop;
+    private final boolean loop;
     private boolean isActive;
 
     public Animation(boolean loop, String path, int numVFrames, int numHFrames, int duration) {
-        frames = new ArrayList<AnimFrame>();
+        frames = new ArrayList<>();
         totalDuration = 0;
         this.loop = loop;
         isActive = false;
@@ -91,7 +90,7 @@ public class Animation {
     }
 
     public synchronized Image getImage() {
-        if (frames.size() == 0) {
+        if (frames.isEmpty()) {
             return null;
         }
         else {

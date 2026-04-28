@@ -28,8 +28,8 @@ public class Boss {
 
     private final Animation animation;
 
-    private int straight, sine, circle;
-    private Random random;
+    private final int straight, sine, circle;
+    private final Random random;
 
     private long lastBossShootTime;
 

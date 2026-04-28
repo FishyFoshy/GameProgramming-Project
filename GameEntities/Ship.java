@@ -1,43 +1,36 @@
 package GameEntities;
 import Misc.Animation;
-import Misc.SoundManager;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
-import java.nio.ReadOnlyBufferException;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 
 public class Ship {
-   private JPanel panel;
-   private int width;
-   private int height;
+   private final JPanel panel;
+   private final int width;
+   private final int height;
    private int x;
-   private int y;
-   private boolean left, right, isP2;
+   private final int y;
+   private boolean left, right;
    private boolean firing;
    private boolean dead;
    private long lastFireTime;
    private static final long FIRE_COOLDOWN = 300;
 
-   private int dx;
+   private final int dx;
    private int damage;
 
    private Dimension dimension;
 
-   private SoundManager soundManager;
    private Animation movementAnimation, rightAnimation, leftAnimation, nextAnimation, idleAnimation;
 
-   private ArrayList<Projectile> projectiles;
+   private final ArrayList<Projectile> projectiles;
    private int color;
 
    public Ship (JPanel p, int xPos, int yPos, boolean isP2) {
       panel = p;
       dimension = panel.getSize();
-
-      this.isP2 = isP2;
-
       color = 3;
       
       if(isP2)
@@ -45,20 +38,14 @@ public class Ship {
 
       width = 80;
       height = 65;
-
       projectiles = new ArrayList<>();
-
       x = xPos;
       y = yPos;
-
       left = right = firing = false;
       lastFireTime = 0;
       dead = false;
-
       dx = 10;
       damage = 1;
-
-      soundManager = SoundManager.getInstance();
 
       idleAnimation = new Animation(true, "images/shipIdleP1.png",3, 2, 100);
       rightAnimation = new Animation(true, "images/rightP1.png", 3, 2, 100);

@@ -6,12 +6,13 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class PowerGem implements Item {
-    private int x, y;
-    private int width, height;
-    private int dy;
+    private final int x;
+    private int y;
+    private final int width, height;
+    private final int dy;
     private boolean active;
-    private BufferedImage image;
-    private GlowFX glowFX;
+    private final BufferedImage image;
+    private final GlowFX glowFX;
     private static final int GLOW_PAD = 6;
 
     public PowerGem(int startX, int startY) {
@@ -26,11 +27,13 @@ public class PowerGem implements Item {
         glowFX = new GlowFX(255, 215, 0, 180);
     }
 
+    @Override
     public void update() {
         if (!active) return;
         y += dy;
     }
 
+    @Override
     public void draw(Graphics2D g2) {
         if (!active) return;
 
@@ -40,10 +43,12 @@ public class PowerGem implements Item {
         g2.drawImage(image, x, y, width, height, null);
     }
 
+    @Override
     public Rectangle2D.Double getBoundingRectangle() {
         return new Rectangle2D.Double(x, y, width, height);
     }
 
+    @Override
     public boolean isActive() { return active; }
 
     public void collect() { active = false; }
@@ -52,6 +57,8 @@ public class PowerGem implements Item {
         return y > screenHeight;
     }
 
+    @Override
     public int getX() { return x; }
+    @Override
     public int getY() { return y; }
 }

@@ -6,15 +6,14 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 
 public class Asteroid {
-    private int x, y;
-    private int size;
-    private int dy;
+    private final int x, size, dy;
+    private int y;
     private boolean alive;
 
     // hitbox rectangles (top, middle, bottom)
-    private int topW, topH;
-    private int midW, midH;
-    private int botW, botH;
+    private final int topW, topH;
+    private final int midW, midH;
+    private final int botW, botH;
 
     public Asteroid(int startX, int startY) {
         this.x = startX;

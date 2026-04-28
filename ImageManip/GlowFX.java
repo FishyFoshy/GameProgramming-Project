@@ -49,6 +49,7 @@ public class GlowFX implements ImageFX {
     }
 
 
+    @Override
     public BufferedImage apply(BufferedImage image) {
         BufferedImage copy = ImageManager.copyImage(image);
 
@@ -76,7 +77,9 @@ public class GlowFX implements ImageFX {
         return apply(bi);
     }
 
+    @Override
     public void update() {}
 
+    @Override
     public String getEffectName() { return "Glow"; }
 }
