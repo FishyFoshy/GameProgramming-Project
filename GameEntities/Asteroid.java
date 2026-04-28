@@ -1,4 +1,5 @@
 package GameEntities;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
@@ -51,6 +52,10 @@ public class Asteroid {
         g2.setPaint(bodyGradient);
         Ellipse2D.Double body = new Ellipse2D.Double(x, y, size, size);
         g2.fill(body);
+
+        g2.setColor(Color.RED);
+        g2.setStroke(new BasicStroke(2));
+        g2.draw(body);
 
         // rocky surface texture
         g2.setColor(new Color(120, 100, 80, 100));

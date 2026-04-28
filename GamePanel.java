@@ -52,7 +52,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	private long lastUpdateTime;
 	private long levelTimer;
 	private long level2StartTime;
-	private static final long LEVEL1_DURATION = 180000; // 3 minutes in ms
+	private static final long LEVEL1_DURATION = 90000; // 1.5 minutes in ms
 	private static final long CANTIME = 10000; // 10 seconds in ms
 	private final Random random;
 
