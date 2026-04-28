@@ -21,6 +21,7 @@ public class GrayScaleFX implements ImageFX {
 		return newPixel;
 	}
 
+    @Override
 	public BufferedImage apply(BufferedImage image) {
 		BufferedImage copyImage = ImageManager.copyImage(image);
 
@@ -38,7 +39,9 @@ public class GrayScaleFX implements ImageFX {
 		return copyImage;
 	}
 
+    @Override
 	public void update(){}
 
+    @Override
 	public String getEffectName(){return "GrayScale";}
 }

@@ -1,12 +1,11 @@
 package Screens;
+import Misc.Animation;
 import java.awt.Graphics2D;
 
-import Misc.Animation;
-
 public class Explosion {
-    private int x, y;
-    private int size;
-    private Animation animation;
+    private final int x, y;
+    private final int size;
+    private final Animation animation;
 
     public Explosion(int x, int y, int size) {
         this.x = x;

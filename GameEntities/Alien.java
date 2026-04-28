@@ -9,12 +9,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Alien {
-   private int x;
-   private final int dy;
-   private int y, dx;
-   
-   private final int width;
-   private final int height;
+   private int x, y, dx;
+   private final int dy, width, height;
 
    private final Image alienImage;
    private ImageFX effect;

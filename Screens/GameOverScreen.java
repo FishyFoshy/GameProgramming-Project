@@ -5,11 +5,11 @@ import java.awt.Graphics2D;
 
 public class GameOverScreen {
 
-    private int panelWidth, panelHeight;
-    private int buttonWidth = 200;
-    private int buttonHeight = 50;
-    private int buttonX;
-    private int restartButtonY, exitButtonY;
+    private final int panelWidth, panelHeight;
+    private final int buttonWidth = 200;
+    private final int buttonHeight = 50;
+    private final int buttonX;
+    private final int restartButtonY, exitButtonY;
 
     public GameOverScreen(int width, int height) {
         panelWidth = width;

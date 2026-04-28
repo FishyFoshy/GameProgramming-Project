@@ -4,12 +4,13 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 public class StraightProjectile implements Projectile {
-    private int x, y;
-    private int size;
-    private int dy;
+    private final int x;
+    private int y;
+    private final int size;
+    private final int dy;
     private boolean active;
-    private boolean isShip;
-    private int damage;
+    private final boolean isShip;
+    private final int damage;
     private Color colour;
 
     public StraightProjectile(int startX, int startY, boolean isShip, int damage, int colour) {
@@ -21,22 +22,32 @@ public class StraightProjectile implements Projectile {
         this.isShip = isShip;
         this.damage = damage;
 
-        if(colour == 0)
-            this.colour = Color.GREEN;
-        else if(colour == 1)
-            this.colour = Color.CYAN;
-        else if(colour == 2)
-            this.colour = Color.YELLOW;
-        else if(colour == 3)
-            this.colour = new Color(228, 66, 243);
-        else if(colour == 4)
-            this.colour = Color.RED;
+        switch (colour) {
+            case 0:
+                this.colour = Color.GREEN;
+                break;
+            case 1:
+                this.colour = Color.CYAN;
+                break;
+            case 2:
+                this.colour = Color.YELLOW;
+                break;
+            case 3:
+                this.colour = Color.MAGENTA;
+                break;
+            case 4:
+                this.colour = Color.ORANGE;
+                break;
+            default:
+                break;
+        }
     }
 
     public int getDamage() {
         return damage;
     }
 
+    @Override
     public void update() {
         if (active) {
             if (isShip) {
@@ -53,6 +64,7 @@ public class StraightProjectile implements Projectile {
         }
     }
 
+    @Override
     public void draw(Graphics2D g2) {
         if (!active) return;
         if (isShip) {
@@ -66,16 +78,19 @@ public class StraightProjectile implements Projectile {
         g2.drawRect(x, y, size, size);
     }
 
+    @Override
     public Rectangle2D.Double getBoundingRectangle() {
         if(isActive())
             return new Rectangle2D.Double(x, y, size, size);
         return new Rectangle2D.Double(0,0,0,0);
     }
 
+    @Override
     public boolean isActive() {
         return active;
     }
 
+    @Override
     public boolean isShip() {
         return isShip;
     }

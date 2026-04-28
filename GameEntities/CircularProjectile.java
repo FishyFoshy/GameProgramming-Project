@@ -5,12 +5,12 @@ import java.awt.geom.Rectangle2D;
 
 public class CircularProjectile implements Projectile {
     private int x, y;
-    private int size;
-    private int dy;
+    private final int size;
+    private final int dy;
     private boolean active;
-    private boolean isShip;
-
-    private int centreY, centreX, radius, degree;
+    private final boolean isShip;
+    private final int centreX, radius;
+    private int centreY, degree;
 
     private Color colour;
 
@@ -23,17 +23,25 @@ public class CircularProjectile implements Projectile {
         this.dy = 3;
         this.active = true;
         this.isShip = isShip;
-        radius = 75;
-        degree = 75;
+        this.radius = 75;
+        this.degree = 75;
 
-        if(colour == 0)
-            this.colour = Color.GREEN;
-        else if(colour == 1)
-            this.colour = Color.CYAN;
-        else if(colour == 2)
-            this.colour = Color.YELLOW;
+        switch (colour) {
+            case 0:
+                this.colour = Color.GREEN;
+                break;
+            case 1:
+                this.colour = Color.CYAN;
+                break;
+            case 2:
+                this.colour = Color.YELLOW;
+                break;
+            default:
+                break;
+        }
     }
 
+    @Override
     public void update() {
         if (active) {
             degree = degree + 9;
@@ -59,6 +67,7 @@ public class CircularProjectile implements Projectile {
         }
     }
 
+    @Override
     public void draw(Graphics2D g2) {
         if (!active) return;
         if (isShip) {
@@ -72,16 +81,19 @@ public class CircularProjectile implements Projectile {
         g2.drawRect(x, y, size, size);
     }
 
+    @Override
     public Rectangle2D.Double getBoundingRectangle() {
         if(isActive())
             return new Rectangle2D.Double(x, y, size, size);
         return new Rectangle2D.Double(0,0,0,0);
     }
 
+    @Override
     public boolean isActive() {
         return active;
     }
 
+    @Override
     public boolean isShip() {
         return isShip;
     }

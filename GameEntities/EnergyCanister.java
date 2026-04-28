@@ -6,12 +6,13 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class EnergyCanister implements Item {
-    private int x, y;
-    private int width, height;
-    private int dy;
+    private final int x;
+    private int y;
+    private final int width, height;
+    private final int dy;
     private boolean active;
-    private Animation animation;
-    private GlowFX glowFX;
+    private final Animation animation;
+    private final GlowFX glowFX;
     private static final int GLOW_PAD = 6;
 
     public EnergyCanister(int startX, int startY) {
@@ -27,12 +28,14 @@ public class EnergyCanister implements Item {
         glowFX = new GlowFX(255, 215, 0, 160);
     }
 
+    @Override
     public void update() {
         if (!active) return;
         y += dy;
         animation.update();
     }
 
+    @Override
     public void draw(Graphics2D g2) {
         if (!active) return;
 
@@ -42,10 +45,12 @@ public class EnergyCanister implements Item {
         g2.drawImage(animation.getImage(), x, y, width, height, null);
     }
 
+    @Override
     public Rectangle2D.Double getBoundingRectangle() {
         return new Rectangle2D.Double(x, y, width, height);
     }
 
+    @Override
     public boolean isActive() { return active; }
 
     public void collect() { active = false; }
@@ -54,6 +59,8 @@ public class EnergyCanister implements Item {
         return y > screenHeight;
     }
 
+    @Override
     public int getX() { return x; }
+    @Override
     public int getY() { return y; }
 }

@@ -6,15 +6,15 @@ import java.awt.Graphics2D;
 
 public class StartScreen {
 
-	private int panelWidth, panelHeight;
-	private int buttonWidth = 200;
-	private int buttonHeight = 50;
-	private int buttonX;
-	private int startButtonY, instructionsButtonY, exitButtonY;
+	private final int panelWidth, panelHeight;
+	private final int buttonWidth = 200;
+	private final int buttonHeight = 50;
+	private final int buttonX;
+	private final int startButtonY, instructionsButtonY, exitButtonY;
 	private boolean showingInstructions = false;
-	private int xButtonX, xButtonY, xButtonSize = 30;
+	private final int xButtonX, xButtonY, xButtonSize = 30;
 
-	private String instructionsText = 
+	private final String instructionsText = 
 		"""
                 Control your spaceship to destroy incoming Aliens and avoid
                 falling Asteroids. Shoot Aliens to earn points, and collect

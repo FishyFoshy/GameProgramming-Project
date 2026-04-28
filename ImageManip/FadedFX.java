@@ -8,6 +8,7 @@ public class FadedFX implements ImageFX {
 		alpha = 100;
 	}
 
+	@Override
 	public BufferedImage apply(BufferedImage image) {
 		BufferedImage copyImage = ImageManager.copyImage(image);
 
@@ -34,8 +35,9 @@ public class FadedFX implements ImageFX {
 		return copyImage;
 	}
 
-	public void update() {
-	}
+	@Override
+	public void update() {}
 
+	@Override
 	public String getEffectName(){return "Faded";}
 }

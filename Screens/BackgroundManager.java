@@ -1,15 +1,14 @@
 package Screens;
-import java.util.List;
-
 import ImageManip.ImageManager;
-
-import java.util.ArrayList;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BackgroundManager {
-    private List<ParallaxLayer> layers = new ArrayList<>();
+    private final List<ParallaxLayer> layers = new ArrayList<>();
 
+    @SuppressWarnings("OverridableMethodCallInConstructor")
     public BackgroundManager() {
         BufferedImage layer1Image, layer2Image, layer3Image;
 

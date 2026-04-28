@@ -7,17 +7,15 @@ import javax.sound.sampled.*;
 
 public class SoundManager {
 	HashMap<String, Clip> clips;
-	private Set<String> loopingClips;
-	private Set<String> pausedClips;
+	private final Set<String> loopingClips;
+	private final Set<String> pausedClips;
 	private boolean isPaused;
-
-	private static SoundManager instance = null;	
-
+	private static SoundManager instance = null;
+    @SuppressWarnings("OverridableMethodCallInConstructor")
 	private SoundManager () {
-
 		Clip clip;
 
-		clips = new HashMap<String, Clip>();
+		clips = new HashMap<>();
 		loopingClips = new HashSet<>();
 		pausedClips = new HashSet<>();
 		isPaused = false;
@@ -71,7 +69,7 @@ public class SoundManager {
 			clip = AudioSystem.getClip();
 			clip.open(audioIn);
 		}
-		catch (Exception e) {
+		catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
 			System.out.println ("Error opening sound files: " + e);
 		}
 		return clip;
@@ -154,6 +152,7 @@ public class SoundManager {
 		if (firstClip == null) return;
 
 		LineListener listener = new LineListener() {
+            @Override
 			public void update(LineEvent event) {
 				if (event.getType() == LineEvent.Type.STOP && !isPaused) {
 					firstClip.removeLineListener(this);
