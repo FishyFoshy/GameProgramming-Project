@@ -17,8 +17,8 @@ public class PauseScreen {
 	private final int pauseButtonY = 10;
 	private final int pauseButtonSize = 40;
 
-	private final int volPlusBtnX = 508;
-	private final int volMinusBtnX = 542;
+	private final int volPlusBtnX = 542;
+	private final int volMinusBtnX = 508;
 	private final int volBtnY = 758;
 	private final int volBtnSize = 28;
 

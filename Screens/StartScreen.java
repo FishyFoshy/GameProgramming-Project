@@ -14,8 +14,8 @@ public class StartScreen {
 	private boolean showingInstructions = false;
 	private final int xButtonX, xButtonY, xButtonSize = 30;
 
-	private final int volPlusBtnX = 508;
-	private final int volMinusBtnX = 542;
+	private final int volPlusBtnX = 542;
+	private final int volMinusBtnX = 508;
 	private final int volBtnY = 758;
 	private final int volBtnSize = 28;
 
