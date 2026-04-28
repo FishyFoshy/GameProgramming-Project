@@ -1,6 +1,7 @@
 package Screens;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
 public class PauseScreen {
@@ -15,6 +16,11 @@ public class PauseScreen {
 	private final int pauseButtonX = 10;
 	private final int pauseButtonY = 10;
 	private final int pauseButtonSize = 40;
+
+	private final int volPlusBtnX = 508;
+	private final int volMinusBtnX = 542;
+	private final int volBtnY = 758;
+	private final int volBtnSize = 28;
 
 	public PauseScreen(int width, int height) {
 		panelWidth = width;
@@ -40,7 +46,7 @@ public class PauseScreen {
 		g.drawString("Score: " + score, pauseButtonX, pauseButtonY + pauseButtonSize + 20);
 	}
 
-	public void drawPauseMenu(Graphics2D g) {
+	public void drawPauseMenu(Graphics2D g, float volume) {
 		// dim overlay
 		g.setColor(new Color(0, 0, 0, 150));
 		g.fillRect(0, 0, panelWidth, panelHeight);
@@ -70,6 +76,27 @@ public class PauseScreen {
 		g.fillRoundRect(buttonX, exitButtonY, buttonWidth, buttonHeight, 20, 20);
 		g.setColor(Color.WHITE);
 		g.drawString("Exit", buttonX + 78, exitButtonY + 33);
+
+		// volume control (bottom right)
+		g.setFont(new Font("Arial", Font.BOLD, 13));
+		FontMetrics fmv = g.getFontMetrics();
+		String volLabel = "Volume: " + Math.round(volume * 100) + "%";
+		g.setColor(Color.WHITE);
+		int volCenterX = (volPlusBtnX + volMinusBtnX + volBtnSize) / 2;
+		g.drawString(volLabel, volCenterX - fmv.stringWidth(volLabel) / 2, volBtnY - 8);
+
+		// plus button (light green)
+		g.setColor(new Color(144, 238, 144));
+		g.fillRoundRect(volPlusBtnX, volBtnY, volBtnSize, volBtnSize, 8, 8);
+		g.setColor(Color.WHITE);
+		g.setFont(new Font("Arial", Font.BOLD, 20));
+		g.drawString("+", volPlusBtnX + 7, volBtnY + 21);
+
+		// minus button (red)
+		g.setColor(Color.RED);
+		g.fillRoundRect(volMinusBtnX, volBtnY, volBtnSize, volBtnSize, 8, 8);
+		g.setColor(Color.WHITE);
+		g.drawString("-", volMinusBtnX + 9, volBtnY + 21);
 	}
 
 	public String getButtonClicked(int x, int y, boolean isPaused) {
@@ -91,6 +118,12 @@ public class PauseScreen {
 			if (y >= exitButtonY && y <= exitButtonY + buttonHeight)
 				return "exit";
 		}
+		if (x >= volPlusBtnX && x <= volPlusBtnX + volBtnSize &&
+			y >= volBtnY && y <= volBtnY + volBtnSize)
+			return "plus";
+		if (x >= volMinusBtnX && x <= volMinusBtnX + volBtnSize &&
+			y >= volBtnY && y <= volBtnY + volBtnSize)
+			return "minus";
 		return null;
 	}
 }

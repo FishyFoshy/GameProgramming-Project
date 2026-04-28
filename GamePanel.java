@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-
 import javax.sound.sampled.Clip;
 import javax.swing.JPanel;
 
@@ -150,7 +149,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 				// start screen loop
 				while (isRunning && showStartScreen) {
 					Graphics2D imageContext = (Graphics2D) image.getGraphics();
-					startScreen.draw(imageContext);
+					startScreen.draw(imageContext, volume);
 					imageContext.dispose();
 
 					Graphics2D g2 = (Graphics2D) getGraphics();
@@ -609,7 +608,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 
 		// if paused, draw the dim overlay and menu
 		if (isPaused) {
-			pauseScreen.drawPauseMenu(imageContext);
+			pauseScreen.drawPauseMenu(imageContext, volume);
 		}
 
 		// draw game over screen
@@ -628,9 +627,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 	}
 
 	public void changeVolume(String s){
-		if(s == "plus")
+		if("plus".equals(s))
 			volume += 0.1;
-		else if(s == "minus")
+		else if("minus".equals(s))
 			volume -= 0.1;
 		if(volume < 0)
 			volume = 0;
@@ -779,6 +778,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					startScreen.setShowingInstructions(false);
 				} else if (clicked.equals("exit")) {
 					System.exit(0);
+				} else if (clicked.equals("plus")) {
+					changeVolume("plus");
+				} else if (clicked.equals("minus")) {
+					changeVolume("minus");
 				}
 			}
 		} else if (showPlayerSelect) {
@@ -827,6 +830,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 					restartGame();
 				} else if (clicked.equals("exit")) {
 					System.exit(0);
+				} else if (clicked.equals("plus")) {
+					changeVolume("plus");
+				} else if (clicked.equals("minus")) {
+					changeVolume("minus");
 				}
 			}
 		}
