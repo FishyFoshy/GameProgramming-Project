@@ -167,13 +167,19 @@ public class SoundManager {
 
 	public void setVolume (String title, float volume) {
 		Clip clip = getClip(title);
-
-		FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-	
-		float range = gainControl.getMaximum() - gainControl.getMinimum();
-		float gain = (range * volume) + gainControl.getMinimum();
-
-		gainControl.setValue(gain);
+		if (clip == null) return;
+		try {
+			FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+			float gain;
+			if (volume <= 0f) {
+				gain = gainControl.getMinimum();
+			} else {
+				gain = 20f * (float) Math.log10(volume);
+				gain = Math.max(gainControl.getMinimum(), Math.min(gainControl.getMaximum(), gain));
+			}
+			gainControl.setValue(gain);
+		} catch (IllegalArgumentException e) {
+		}
 	}
 
 	public HashMap<String, Clip> getAllClips(){ return clips; }
