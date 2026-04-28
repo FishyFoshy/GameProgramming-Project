@@ -1,10 +1,8 @@
 package Screens;
-import ImageManip.ImageFX;
 import ImageManip.ImageManager;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
