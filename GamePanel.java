@@ -12,12 +12,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+
+import javax.sound.sampled.Clip;
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener, MouseListener {
    
 	private final SoundManager soundManager;
+
+	private float volume;
 
 	private ArrayList<Alien> aliens;
 	private ArrayList<Asteroid> asteroids;
@@ -90,6 +95,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		lastAsteroidSpawnTime = 0;
 		lastAlienSpawnTime = 0;
 		levelTimer = LEVEL1_DURATION;
+		volume = (float) 1.0;
 
 		image = new BufferedImage (600, 800, BufferedImage.TYPE_INT_RGB);
 
@@ -619,6 +625,24 @@ public class GamePanel extends JPanel implements Runnable, KeyListener, MouseLis
 		g2.drawImage(image, 0, 0, 600, 800, null);
 		imageContext.dispose();
 		g2.dispose();
+	}
+
+	public void changeVolume(String s){
+		if(s == "plus")
+			volume += 0.1;
+		else if(s == "minus")
+			volume -= 0.1;
+		if(volume < 0)
+			volume = 0;
+		if(volume > 1.0)
+			volume = (float) 1.0;
+
+		HashMap<String, Clip> clips = soundManager.getAllClips();
+		
+		for (String title : clips.keySet()) {
+			soundManager.setVolume(title, volume);
+		}
+
 	}
 
 	public void startGame() {

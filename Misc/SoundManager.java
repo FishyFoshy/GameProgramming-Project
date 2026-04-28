@@ -164,4 +164,17 @@ public class SoundManager {
 		firstClip.addLineListener(listener);
 		playClip(firstTitle, false);
 	}
+
+	public void setVolume (String title, float volume) {
+		Clip clip = getClip(title);
+
+		FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+	
+		float range = gainControl.getMaximum() - gainControl.getMinimum();
+		float gain = (range * volume) + gainControl.getMinimum();
+
+		gainControl.setValue(gain);
+	}
+
+	public HashMap<String, Clip> getAllClips(){ return clips; }
 }
